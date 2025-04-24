@@ -1,2 +1,4 @@
 # weather-coin-project
-(☞ﾟヮﾟ)☞
+
+(☞ ﾟヮﾟ)☞
+test
