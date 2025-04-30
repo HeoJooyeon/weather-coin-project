@@ -1,7 +1,6 @@
-CREATE DATABASE IF NOT EXISTS binance;
+CREATE DATABASE IF NOT EXISTS weathercoin;
 
-USE binance;
-DROP TABLE IF EXISTS coin_info;
+USE weathercoin;
 
 /* 코인 종류 목록 (type 컬럼에 들어가는 값):
 1. 비트코인 (Bitcoin)         - 심볼: BTC / 페어: BTCUSDT
@@ -17,6 +16,7 @@ DROP TABLE IF EXISTS coin_info;
 */
 
 -- 코인 기본 정보 테이블
+DROP TABLE IF EXISTS coin_info;
 CREATE TABLE coin_info (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 고유 ID (내부 식별용)',
     name VARCHAR(50) NOT NULL COMMENT '코인 이름 (예: 비트코인)',
@@ -40,7 +40,6 @@ CREATE TABLE coin_info (
 -- 바이낸스 1시간봉 OHLCV 데이터 테이블
 DROP TABLE IF EXISTS binance_ohlcv_1h;
 CREATE TABLE binance_ohlcv_1h (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '바이낸스 코인 데이터 PK',
     pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
     open_time DATETIME NOT NULL COMMENT '시가 기준 시작 시간',
     open_price DECIMAL(20,8) NOT NULL COMMENT '시가 (가격, Open)',
@@ -56,21 +55,24 @@ CREATE TABLE binance_ohlcv_1h (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    PRIMARY KEY (pair, open_time)
 ) COMMENT = '바이낸스 1시간봉 OHLCV 데이터 테이블';
 
 -- 코인 스코어 테이블
 DROP TABLE IF EXISTS coin_score;
 CREATE TABLE coin_score (
-    score_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 스코어 PK',
     pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    open_time DATETIME NOT NULL COMMENT '해당 시점 기준 스코어 시간',
     score_value DECIMAL(2,1) NOT NULL COMMENT '코인 스코어 (1.0 ~ 5.0)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    PRIMARY KEY (pair, open_time),
     INDEX idx_pair (pair)
-) COMMENT = '코인별 스코어 관리 테이블';
+) COMMENT = '코인별 시간 기준 스코어 테이블';
+
 
 -- 회원 정보 테이블
 DROP TABLE IF EXISTS users;
