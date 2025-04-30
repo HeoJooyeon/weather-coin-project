@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React build
+/build
+/dist
+
+# Optional logs
+logs
+*.log
+
+# OS별
+.DS_Store
+Thumbs.db
+
+# vscode 설정 (선택)
+.vscode/
+
+# 테스트 파일들 (선택)
+coverage/
+*.test.js
