@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS coin_info;
 10. 라이트코인 (Litecoin)     - 심볼: LTC / 페어: LTCUSDT
 */
 
--- 1. 코인 기본 정보 테이블
+-- 코인 기본 정보 테이블
 CREATE TABLE coin_info (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 고유 ID (내부 식별용)',
     name VARCHAR(50) NOT NULL COMMENT '코인 이름 (예: 비트코인)',
@@ -37,7 +37,7 @@ CREATE TABLE coin_info (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '코인 기본 정보 테이블';
 
--- 2. 바이낸스 1시간봉 OHLCV 데이터 테이블
+-- 바이낸스 1시간봉 OHLCV 데이터 테이블
 DROP TABLE IF EXISTS binance_ohlcv_1h;
 CREATE TABLE binance_ohlcv_1h (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '바이낸스 코인 데이터 PK',
@@ -59,7 +59,7 @@ CREATE TABLE binance_ohlcv_1h (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '바이낸스 1시간봉 OHLCV 데이터 테이블';
 
--- 3. 코인 스코어 테이블
+-- 코인 스코어 테이블
 DROP TABLE IF EXISTS coin_score;
 CREATE TABLE coin_score (
     score_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 스코어 PK',
@@ -72,7 +72,7 @@ CREATE TABLE coin_score (
     INDEX idx_pair (pair)
 ) COMMENT = '코인별 스코어 관리 테이블';
 
--- 4. 회원 정보 테이블
+-- 회원 정보 테이블
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 ID',
@@ -86,7 +86,7 @@ CREATE TABLE users (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '회원 정보 테이블';
 
--- 5. 종목토론 게시판 테이블
+-- 종목토론 게시판 테이블
 DROP TABLE IF EXISTS board_post;
 CREATE TABLE board_post (
     post_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '게시판 글 PK',
@@ -101,7 +101,7 @@ CREATE TABLE board_post (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '종목토론 게시판 테이블';
 
--- 6. 종목토론 게시판 댓글 테이블
+-- 종목토론 게시판 댓글 테이블
 DROP TABLE IF EXISTS board_comment;
 CREATE TABLE board_comment (
     comment_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '게시판 댓글 PK',
@@ -115,7 +115,7 @@ CREATE TABLE board_comment (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '종목토론 게시판 댓글 테이블';
 
--- 7. 코인 관련 뉴스 테이블
+-- 코인 관련 뉴스 테이블
 DROP TABLE IF EXISTS coin_news;
 CREATE TABLE coin_news (
     news_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '뉴스 PK',
@@ -131,7 +131,7 @@ CREATE TABLE coin_news (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '코인 관련 뉴스 테이블';
 
--- 8. 금 시세 정보 테이블
+-- 금 시세 정보 테이블
 DROP TABLE IF EXISTS gold_price;
 CREATE TABLE gold_price (
     gold_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '금 시세 PK',
@@ -146,7 +146,7 @@ CREATE TABLE gold_price (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '금 시세 정보 테이블 (GoldPricez 기준)';
 
--- 8. 환율 정보 테이블
+-- 환율 정보 테이블
 DROP TABLE IF EXISTS exchange_rate;
 CREATE TABLE exchange_rate (
     rate_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '환율 정보 PK',
@@ -163,7 +163,7 @@ CREATE TABLE exchange_rate (
 -------------------------------------------------------------------------------
 -- 여기서부터는 테이블 설계가 임시입니다.
 -------------------------------------------------------------------------------
--- 8. 회원 성향 분석 테이블
+-- 회원 성향 분석 테이블
 DROP TABLE IF EXISTS user_profile;
 CREATE TABLE user_profile (
     profile_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '성향 분석 PK',
@@ -176,7 +176,7 @@ CREATE TABLE user_profile (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '회원 성향 분석 테이블';
 
--- 9. 코인 기술적 지표 테이블
+-- 코인 기술적 지표 테이블
 DROP TABLE IF EXISTS coin_indicator;
 CREATE TABLE coin_indicator (
     indicator_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '지표 테이블 PK',
@@ -196,7 +196,7 @@ CREATE TABLE coin_indicator (
     INDEX idx_pair (pair)
 ) COMMENT = '코인 기술적 지표 저장 테이블 (테이블별 입력 순번 관리)';
 
--- 10. 수익률 예측 테이블
+-- 수익률 예측 테이블
 DROP TABLE IF EXISTS coin_prediction;
 CREATE TABLE coin_prediction (
     predict_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '수익률 예측 PK',
@@ -212,7 +212,7 @@ CREATE TABLE coin_prediction (
     INDEX idx_pair (pair)
 ) COMMENT = '코인 수익률 예측 결과 (강수확률 형태)';
 
--- 11. 시장 심리지수
+-- 시장 심리지수
 DROP TABLE IF EXISTS market_sentiment;
 CREATE TABLE market_sentiment (
     sentiment_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '시장 심리지수 PK',
@@ -226,7 +226,7 @@ CREATE TABLE market_sentiment (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '시장 공포/탐욕 지수 테이블';
 
--- 12. SNS 발언 테이블
+-- SNS 발언 테이블
 DROP TABLE IF EXISTS sns_post;
 CREATE TABLE sns_post (
     sns_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'SNS 발언 PK',
