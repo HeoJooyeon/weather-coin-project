@@ -73,7 +73,6 @@ CREATE TABLE coin_score (
     INDEX idx_pair (pair)
 ) COMMENT = '코인별 시간 기준 스코어 테이블';
 
-
 -- 회원 정보 테이블
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
