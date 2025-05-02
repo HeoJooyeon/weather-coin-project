@@ -22,6 +22,7 @@ CREATE TABLE coin_info (
     name VARCHAR(50) NOT NULL COMMENT '코인 이름 (예: 비트코인)',
     symbol VARCHAR(20) NOT NULL COMMENT '코인 심볼 (예: BTC)',
     pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    open_time DATETIME NOT NULL COMMENT '시가 기준 시작 시간',
     current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',
     change_24h DECIMAL(10,4) COMMENT '24시간 가격 변동률 (%)',
     change_7d DECIMAL(10,4) COMMENT '7일 가격 변동률 (%)',
@@ -31,10 +32,12 @@ CREATE TABLE coin_info (
     weather_tomorrow VARCHAR(20) COMMENT '예측된 내일 시장 상태',
     market_cap_rank INT COMMENT '시가총액 순위 (작을수록 상위)',
     logo_url VARCHAR(255) COMMENT '코인 로고 이미지 URL',
+    score_value DECIMAL(2,1) COMMENT '코인 스코어 (1.0 ~ 5.0)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 생성 시간',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    UNIQUE KEY uq_pair_open_time (pair, open_time)
 ) COMMENT = '코인 기본 정보 테이블';
 
 -- 바이낸스 1시간봉 OHLCV 데이터 테이블
@@ -58,20 +61,6 @@ CREATE TABLE binance_ohlcv_1h (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
     PRIMARY KEY (pair, open_time)
 ) COMMENT = '바이낸스 1시간봉 OHLCV 데이터 테이블';
-
--- 코인 스코어 테이블
-DROP TABLE IF EXISTS coin_score;
-CREATE TABLE coin_score (
-    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-    open_time DATETIME NOT NULL COMMENT '해당 시점 기준 스코어 시간',
-    score_value DECIMAL(2,1) NOT NULL COMMENT '코인 스코어 (1.0 ~ 5.0)',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
-    PRIMARY KEY (pair, open_time),
-    INDEX idx_pair (pair)
-) COMMENT = '코인별 시간 기준 스코어 테이블';
 
 -- 회원 정보 테이블
 DROP TABLE IF EXISTS users;
@@ -121,8 +110,8 @@ DROP TABLE IF EXISTS coin_news;
 CREATE TABLE coin_news (
     news_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '뉴스 PK',
     title VARCHAR(255) NOT NULL COMMENT '뉴스 제목',
-    pair VARCHAR(20) COMMENT '거래쌍 (예: BTC/USDT)',
-    symbol VARCHAR(20) COMMENT '심볼 (예: BTCUSDT)',
+    pair VARCHAR(20) COMMENT '거래쌍 (예: BTCUSDT)',
+    symbol VARCHAR(20) COMMENT '심볼 (예: BTC)',
     content TEXT NOT NULL COMMENT '뉴스 내용',
     url VARCHAR(500) COMMENT '뉴스 원본 URL',
     publish_time DATETIME COMMENT '기사 발행 시각',
@@ -137,15 +126,15 @@ DROP TABLE IF EXISTS gold_price;
 CREATE TABLE gold_price (
     gold_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '금 시세 PK',
     currency_code VARCHAR(10) NOT NULL COMMENT '통화 코드 (예: USD, KRW)',
-    price_per_gram DECIMAL(20, 4) NOT NULL COMMENT '1그램당 금 가격',
+    price_per_gram DECIMAL(20, 4) COMMENT '1그램당 금 가격',
     price_per_ounce DECIMAL(20, 4) COMMENT '1온스당 금 가격',
     price_per_kilogram DECIMAL(20, 4) COMMENT '1킬로그램당 금 가격',
-    data_time DATETIME NOT NULL COMMENT '시세 기준 시각',
+    price_time DATETIME NOT NULL COMMENT '금 시세 기준 시각',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 수집 시각',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
-) COMMENT = '금 시세 정보 테이블 (GoldPricez 기준)';
+) COMMENT = '금 시세 정보 테이블 (공공데이터포털 기준)';
 
 -- 환율 정보 테이블
 DROP TABLE IF EXISTS exchange_rate;
