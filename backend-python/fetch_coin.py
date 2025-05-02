@@ -75,20 +75,7 @@ def fetch_coin_to_mysql(query = "BTC"):
                     # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
                     cur.execute(f"""
                         INSERT INTO binance_ohlcv_1h(pair, open_time, open_price, high_price, low_price, close_price, base_vol, close_time, quote_vol, trade_count, tb_base_vol, tb_quote_vol, created_at)
-                        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
-                        ON DUPLICATE KEY UPDATE
-                            open_time = VALUES(open_time),
-                            open_price = VALUES(open_price),
-                            high_price = VALUES(high_price),
-                            low_price = VALUES(low_price),
-                            close_price = VALUES(close_price),
-                            base_vol = VALUES(base_vol),
-                            close_time = VALUES(close_time),
-                            quote_vol = VALUES(quote_vol),
-                            trade_count = VALUES(trade_count),
-                            tb_base_vol = VALUES(tb_base_vol),
-                            tb_quote_vol = VALUES(tb_quote_vol),
-                            created_at = NOW()
+                        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())                        
                     """, (coin, open_time, open_price, high_price, low_price, close_price, base_vol, close_time, quote_vol, trade_count, tb_base_vol[:20], tb_quote_vol))
                     
                 
