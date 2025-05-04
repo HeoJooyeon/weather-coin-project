@@ -42,7 +42,7 @@ def count_macd_rate(df):
         "MACDs_12_26_9": "macd_signal",
         "MACDh_12_26_9": "macd_histogram"
     })
-    print(btc["macd_line"].tail(50))
+    return btc
 
 
 if __name__ == "__main__":    

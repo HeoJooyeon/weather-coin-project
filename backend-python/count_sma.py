@@ -37,7 +37,7 @@ def count_sma_rate(df):
     btc = btc.rename(columns={
         "SMA_14": "btc_sma"
     })
-    print(btc.tail())
+    return btc
 
     
 if __name__ == "__main__":    
