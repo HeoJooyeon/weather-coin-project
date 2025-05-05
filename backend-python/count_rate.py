@@ -27,7 +27,7 @@ def index():
     
     return df
     
-def count_rsi_rate(df):
+def count_rate(df):
     btc = df[df["pair"] == "BTC"].sort_values("open_time")
     btc.ta.sma(length=5, append=True)
     btc.ta.ema(length=5, append=True)
@@ -47,4 +47,4 @@ def count_rsi_rate(df):
     
 if __name__ == "__main__":    
     df = index()
-    count_rsi_rate(df)
+    count_rate(df)
