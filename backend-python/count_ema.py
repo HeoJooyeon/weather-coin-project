@@ -27,15 +27,16 @@ def index():
     
     return df
     
-def count_sma_rate(df):
+def count_ema_rate(df):
     btc = df[df["pair"] == "BTC"].sort_values("open_time")
-    btc_sma = btc.ta.sma(length=14, append=True)
+    btc.ta.ema(length=14, append=True)
     btc = btc.rename(columns={
-        "SMA_14": "btc_sma"
+        "EMA_14": "btc_ema"
     })
     return btc
+    # print(btc)
 
     
 if __name__ == "__main__":    
     df = index()
-    count_sma_rate(df)
+    count_ema_rate(df)

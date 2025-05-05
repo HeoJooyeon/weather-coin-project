@@ -27,15 +27,24 @@ def index():
     
     return df
     
-def count_sma_rate(df):
+def count_rsi_rate(df):
     btc = df[df["pair"] == "BTC"].sort_values("open_time")
-    btc_sma = btc.ta.sma(length=14, append=True)
+    btc.ta.sma(length=5, append=True)
+    btc.ta.ema(length=5, append=True)
+    btc.ta.rsi(length=14, append=True)
+    btc.ta.macd(close="close_price", fast=12, slow=26, signal=9, append=True)
     btc = btc.rename(columns={
-        "SMA_14": "btc_sma"
+        "SMA_5": "btc_sma",
+        "EMA_5": "btc_ema",
+        "RSI_14": "btc_rsi",
+        "MACD_12_26_9": "btc_macd_line",
+        "MACDh_12_26_9": "btc_macd_signal",
+        "MACDs_12_26_9": "btc_macd_histogram"
     })
     return btc
+    # print(btc)
 
     
 if __name__ == "__main__":    
     df = index()
-    count_sma_rate(df)
+    count_rsi_rate(df)

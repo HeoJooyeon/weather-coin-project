@@ -37,6 +37,27 @@ def calculate_macd():
         print("조회된 데이터가 없습니다.")
         return None
     
+def calculate_rsi():
+
+    connection = get_db_connection()     
+    
+    query = f"""
+        SELECT * FROM binance_ohlcv_1h        
+    """
+    
+    df = pd.read_sql(query, connection)   
+    
+    connection.close()    
+    
+    if not df.empty:
+        
+        from count_rsi import count_rsi_rate
+        
+        btc = count_rsi_rate(df)
+        return btc
+    else:
+        print("조회된 데이터가 없습니다.")
+        return None
 def calculate_sma():
 
     connection = get_db_connection()     
@@ -55,6 +76,28 @@ def calculate_sma():
         
         sma = count_sma_rate(df)
         return sma
+    else:
+        print("조회된 데이터가 없습니다.")
+        return None
+    
+def calculate_ema():
+
+    connection = get_db_connection()     
+    
+    query = f"""
+        SELECT * FROM binance_ohlcv_1h        
+    """
+    
+    df = pd.read_sql(query, connection)   
+    
+    connection.close()    
+    
+    if not df.empty:
+        
+        from count_ema import count_ema_rate
+        
+        ema = count_ema_rate(df)
+        return ema
     else:
         print("조회된 데이터가 없습니다.")
         return None
@@ -82,19 +125,25 @@ def calculate_change_rate():
         return None
         
 
-def coin_info_table(macd,sma,day, week, month):
-    print(f"macd")
-    print(macd)
-    print(f"sma")
-    print(sma)
-    print(f"day, month, year")
-    print(day["daily_change"], week["week_change"], month["month_change"])
+def coin_info_table(macd,sma,ema,day, week, month, btc):
+    # print(f"macd")
+    # print(macd)
+    # print(f"sma")
+    # print(sma)
+    # print(f"ema")
+    # print(ema)
+    # print(f"day, month, year")
+    # print(day["daily_change"], week["week_change"], month["month_change"])
+    print(f"btc")
+    print(btc)
 
 if __name__ == "__main__":
     macd = calculate_macd()    
     sma = calculate_sma()
+    ema = calculate_ema()
     day, week, month = calculate_change_rate()
+    btc = calculate_rsi()
 
-    coin_info_table(macd,sma,day, week, month)
+    coin_info_table(macd,sma,ema,day, week, month, btc)
     
     
