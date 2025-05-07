@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
@@ -5,6 +6,7 @@ const path = require("path");
 const os = require("os");
 const iconv = require("iconv-lite"); // 인코딩 변환
 const { fetchAndStoreOHLCV } = require("./api/binanceService");
+const { fetchAndStoreGoldPrices } = require("./api/gold");
 
 const app = express();
 const PORT = 5001;
@@ -75,6 +77,24 @@ app.post("/api/fetch-ohlcv", async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Error fetching or storing data." });
+  }
+});
+
+app.post("/api/fetch-gold", async (req, res) => {
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    return res
+      .status(400)
+      .json({ message: "시작일자와 종료일자를 입력하세요." });
+  }
+
+  try {
+    const count = await fetchAndStoreGoldPrices(startDate, endDate);
+    res.json({ message: `총 ${count}건 저장 완료` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "오류 발생", error: err.message });
   }
 });
 

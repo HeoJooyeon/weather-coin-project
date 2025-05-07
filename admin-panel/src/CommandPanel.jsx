@@ -15,7 +15,7 @@ export default function CommandPanel() {
 
     const data = await res.json();
     setOutput(
-      data.output || `❌ 오류:\n${data.error || "명령어 실행 결과가 없습니다."}`
+      data.output || `오류:\n${data.error || "명령어 실행 결과가 없습니다."}`
     );
   };
 
@@ -31,7 +31,7 @@ export default function CommandPanel() {
     });
 
     const data = await res.json();
-    setOutput(data.output || "📁 디렉토리를 초기화할 수 없습니다.");
+    setOutput(data.output || "디렉토리를 초기화할 수 없습니다.");
   };
 
   return (

@@ -155,16 +155,18 @@ CREATE TABLE coin_news (
 DROP TABLE IF EXISTS gold_price;
 CREATE TABLE gold_price (
     gold_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '금 시세 PK',
-    currency_code VARCHAR(10) NOT NULL COMMENT '통화 코드 (예: USD, KRW)',
-    price_per_gram DECIMAL(20, 4) COMMENT '1그램당 금 가격',
-    price_per_ounce DECIMAL(20, 4) COMMENT '1온스당 금 가격',
-    price_per_kilogram DECIMAL(20, 4) COMMENT '1킬로그램당 금 가격',
-    price_time DATETIME NOT NULL COMMENT '금 시세 기준 시각',
+    base_date DATE NOT NULL COMMENT '기준일자',
+    item_name VARCHAR(100) NOT NULL COMMENT '금 상품명 (예: 금 99.99_1Kg)',
+    price_krw INT NOT NULL COMMENT '종가 (원 단위)',
+    weight_kg DECIMAL(10,4) COMMENT '무게 (kg)',
+    price_per_gram DECIMAL(20,4) COMMENT '그램당 환산 가격',
+    price_per_ounce DECIMAL(20,4) COMMENT '온스당 환산 가격',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 수집 시각',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
-) COMMENT = '금 시세 정보 테이블 (공공데이터포털 기준)';
+	deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    UNIQUE KEY uq_item_date (item_name, base_date)
+) COMMENT = '공공데이터포털 금 시세 테이블';
 
 -- 환율 정보 테이블
 DROP TABLE IF EXISTS exchange_rate;
