@@ -4,6 +4,7 @@ const { exec } = require("child_process");
 const path = require("path");
 const os = require("os");
 const iconv = require("iconv-lite"); // 인코딩 변환
+const { fetchAndStoreOHLCV } = require("./api/binanceService");
 
 const app = express();
 const PORT = 5001;
@@ -20,7 +21,7 @@ const shell = os.platform() === "win32" ? "cmd.exe" : "/bin/bash";
 // 기본 디렉토리로 초기화
 app.post("/reset-dir", (req, res) => {
   currentDir = baseDir;
-  res.json({ output: `✅ 디렉토리를 기본 위치로 초기화: ${currentDir}` });
+  res.json({ output: `디렉토리를 기본 위치로 초기화: ${currentDir}` });
 });
 
 app.post("/run", (req, res) => {
@@ -35,7 +36,7 @@ app.post("/run", (req, res) => {
     try {
       const newPath = path.resolve(currentDir, target);
       currentDir = newPath;
-      return res.json({ output: `📁 디렉토리 이동: ${currentDir}` });
+      return res.json({ output: `디렉토리 이동: ${currentDir}` });
     } catch (e) {
       return res.status(400).json({ error: `경로 이동 실패: ${e.message}` });
     }
@@ -60,6 +61,23 @@ app.post("/run", (req, res) => {
   );
 });
 
+app.post("/api/fetch-ohlcv", async (req, res) => {
+  const { pair, startDate, endDate } = req.body;
+
+  try {
+    await fetchAndStoreOHLCV(pair, startDate, endDate);
+    res.json({
+      success: true,
+      message: `${pair}의 데이터를 ${startDate}~${endDate}까지 저장했습니다.`,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching or storing data." });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`✅ CMD 서버 실행 중! http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
