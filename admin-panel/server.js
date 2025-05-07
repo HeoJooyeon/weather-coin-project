@@ -7,6 +7,7 @@ const os = require("os");
 const iconv = require("iconv-lite"); // 인코딩 변환
 const { fetchAndStoreOHLCV } = require("./api/binanceService");
 const { fetchAndStoreGoldPrices } = require("./api/gold");
+const { fetchAndStoreExchangeRates } = require("./api/exchangeRate");
 
 const app = express();
 const PORT = 5001;
@@ -95,6 +96,17 @@ app.post("/api/fetch-gold", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "오류 발생", error: err.message });
+  }
+});
+
+app.post("/api/exchange-rate", async (req, res) => {
+  const { startDate, endDate } = req.body;
+  try {
+    const count = await fetchAndStoreExchangeRates(startDate, endDate);
+    res.json({ message: `${count}개의 환율 데이터가 저장되었습니다.` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "데이터 수집 중 오류 발생" });
   }
 });
 
