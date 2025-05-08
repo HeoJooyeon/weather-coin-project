@@ -29,11 +29,11 @@ def create_table():
                     high_price DECIMAL(20,8) NOT NULL COMMENT '고가 (가격, High)',
                     low_price DECIMAL(20,8) NOT NULL COMMENT '저가 (가격, Low)',
                     close_price DECIMAL(20,8) NOT NULL COMMENT '종가 (가격, Close)',
-                    base_vol DECIMAL(30,8) NOT NULL COMMENT '코인 기준 거래량',
+                    base_vol DECIMAL(20,8) NOT NULL COMMENT '코인 기준 거래량',
                     close_time DATETIME NOT NULL COMMENT '종가 기준 종료 시간',
                     quote_vol DECIMAL(20,8) COMMENT 'USDT 기준 거래량',
                     trade_count INT COMMENT '거래 횟수',
-                    tb_base_vol DECIMAL(30,8) COMMENT '매수자 코인 거래량',
+                    tb_base_vol DECIMAL(20,8) COMMENT '매수자 코인 거래량',
                     tb_quote_vol DECIMAL(20,8) COMMENT '매수자 USDT 거래량',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시'
                 ) COMMENT = '바이낸스 1시간봉 OHLCV 데이터 테이블';
