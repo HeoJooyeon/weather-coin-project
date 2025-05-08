@@ -26,25 +26,98 @@ def index():
     connection.close()
     
     return df
-    
+# 변동률 예측
+ 
 def count_rate(df):
-    btc = df[df["pair"] == "BTC"].sort_values("open_time")
-    btc.ta.sma(length=5, append=True)
-    btc.ta.ema(length=5, append=True)
-    btc.ta.rsi(length=14, append=True)
-    btc.ta.macd(close="close_price", fast=12, slow=26, signal=9, append=True)
-    btc = btc.rename(columns={
-        "SMA_5": "btc_sma",
-        "EMA_5": "btc_ema",
-        "RSI_14": "btc_rsi",
-        "MACD_12_26_9": "btc_macd_line",
-        "MACDh_12_26_9": "btc_macd_signal",
-        "MACDs_12_26_9": "btc_macd_histogram"
-    })
-    return btc
-    # print(btc)
+    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    coin_results = []
+    for coin in coins:
+        
+        coin_by_pair = df[df["pair"] == coin].sort_values("open_time")
+        
+        coin_by_pair.ta.sma(length=5, append=True)
+        coin_by_pair.ta.ema(length=5, append=True)
+        coin_by_pair.ta.rsi(length=14, append=True)
+        coin_by_pair.ta.macd(close="close_price", fast=12, slow=26, signal=9, append=True)
+        coin_by_pair = coin_by_pair.rename(columns={
+            "SMA_5": "sma",
+            "EMA_5": "ema",
+            "RSI_14": "rsi",
+            "MACD_12_26_9": "macd_line",
+            "MACDh_12_26_9": "macd_signal",
+            "MACDs_12_26_9": "macd_histogram"
+        })
+        coin_results.append(coin_by_pair)
+    return coin_results
+        # print(btc)
+    
+def calculate_score(coin_by_pair):
+    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    score_lists = {}
+    results = []
+        
+    # rsi 조건
+    for coin_pair in coin_by_pair:
+        score = 0
+        for rsi in coin_pair["rsi"].tail(1):
+            
+            if rsi < 30:
+                score += 1
+            elif rsi > 70:
+                score -= 1
+            # print(f"rsi")
+            # print(score)
+        for pair in coin_pair["pair"].tail(1):
+            score_lists[pair] = score
+        
+        
+    # macd 조건
+    for coin_pair in coin_by_pair:
+        score = 0
+        for macd_line in coin_pair["macd_line"].tail(1):            
+            pass
+        for macd_signal in coin_pair["macd_signal"].tail(1):                
+            if  macd_line > macd_signal:
+                score += 1
+            else:
+                score -= 1 
+            # print(f"macd")
+            # print(score)
+        for pair in coin_pair["pair"].tail(1):
+            
+            score_lists[pair] += score
+            
+    # sma 조건
+    for coin_pair in coin_by_pair:
+        score = 0
+        sma_20_list = coin_pair.ta.sma(length=20, append=True).tail(1)
+        sma_50_list = coin_pair.ta.sma(length=50, append=True).tail(1)
+        
+        for sma_20 in sma_20_list:
+            pass
+        for sma_50 in sma_50_list:                    
+            pass
+        
+        if sma_20 > sma_50:
+            score += 1
+        else:
+            score -= 1        
+
+        for pair in coin_pair["pair"].tail(1):
+            score_lists[pair] += score    
+    
+    for coin_pair in coin_by_pair:
+        coin_last = coin_pair.tail(1).copy()
+        pair = coin_last["pair"].iloc[0]
+        coin_last["score"] = score_lists[pair]
+        results.append(coin_last)   
+        
+    return results
+
 
     
 if __name__ == "__main__":    
     df = index()
-    count_rate(df)
+    coin_by_pair = count_rate(df)
+    coin_score = calculate_score(coin_by_pair)
+    print(coin_score)
