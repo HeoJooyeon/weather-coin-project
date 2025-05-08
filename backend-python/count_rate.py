@@ -56,65 +56,44 @@ def calculate_score(coin_by_pair):
     score_lists = {}
     results = []
         
-    # rsi 조건
+    
     for coin_pair in coin_by_pair:
         score = 0
-        for rsi in coin_pair["rsi"].tail(1):
-            
-            if rsi < 30:
-                score += 1
-            elif rsi > 70:
-                score -= 1
-            # print(f"rsi")
-            # print(score)
-        for pair in coin_pair["pair"].tail(1):
-            score_lists[pair] = score
+        latest_row = coin_pair.iloc[-1]
+        # rsi 조건
+        rsi = latest_row["rsi"]
+        print(latest_row)   
+        if rsi < 30:
+            score += 1
+        elif rsi > 70:
+            score -= 1               
         
-        
-    # macd 조건
-    for coin_pair in coin_by_pair:
-        score = 0
-        for macd_line in coin_pair["macd_line"].tail(1):            
-            pass
-        for macd_signal in coin_pair["macd_signal"].tail(1):                
-            if  macd_line > macd_signal:
-                score += 1
-            else:
-                score -= 1 
-            # print(f"macd")
-            # print(score)
-        for pair in coin_pair["pair"].tail(1):
-            
-            score_lists[pair] += score
-            
-    # sma 조건
-    for coin_pair in coin_by_pair:
-        score = 0
-        sma_20_list = coin_pair.ta.sma(length=20, append=True).tail(1)
-        sma_50_list = coin_pair.ta.sma(length=50, append=True).tail(1)
-        
-        for sma_20 in sma_20_list:
-            pass
-        for sma_50 in sma_50_list:                    
-            pass
-        
+        # macd 조건
+        macd_line = latest_row["macd_line"]
+        macd_signal = latest_row["macd_signal"]    
+                        
+        if  macd_line > macd_signal:
+            score += 1
+        else:
+            score -= 1
+                        
+         # sma 조건
+        sma_20 = ta.sma(coin_pair["close_price"], length=20).iloc[-1]
+        sma_50 = ta.sma(coin_pair["close_price"], length=50).iloc[-1]
+                
         if sma_20 > sma_50:
             score += 1
         else:
             score -= 1        
 
-        for pair in coin_pair["pair"].tail(1):
-            score_lists[pair] += score    
-    
-    for coin_pair in coin_by_pair:
-        coin_last = coin_pair.tail(1).copy()
-        pair = coin_last["pair"].iloc[0]
-        coin_last["score"] = score_lists[pair]
+        pair = latest_row["pair"] 
+        score_lists[pair] = score    
+   
+        coin_last = latest_row.to_frame().T
+        coin_last["score"] = score
         results.append(coin_last)   
         
     return results
-
-
     
 if __name__ == "__main__":    
     df = index()
