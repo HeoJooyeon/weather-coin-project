@@ -15,22 +15,10 @@ USE weathercoin;
 10. 라이트코인 (Litecoin)     - 심볼: LTC / 페어: LTCUSDT
 */
 
--- 코인 기본 마스터 정보 테이블
-DROP TABLE IF EXISTS coin_master;
-CREATE TABLE coin_master (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 고유 ID',
-    name VARCHAR(50) NOT NULL COMMENT '코인 이름 (예: 비트코인)',
-    symbol VARCHAR(20) NOT NULL COMMENT '코인 심볼 (예: BTC)',
-    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-    logo_url VARCHAR(255) COMMENT '코인 로고 이미지 URL',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시간',
-    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
-    UNIQUE KEY uq_pair (pair)
-) COMMENT = '코인 기본 마스터 정보 테이블';
-
--- 코인 일배치 정보 테이블
+-------------------------------------------------------------------------------
+-- 여기서부터는 수정이 필요한 테이블입니다.
+-------------------------------------------------------------------------------
+-- 일배치 정보 테이블(일코인정보, 환율, 금)
 DROP TABLE IF EXISTS coin_info_daily;
 CREATE TABLE coin_info_daily (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '기본키',
@@ -52,7 +40,7 @@ CREATE TABLE coin_info_daily (
     UNIQUE KEY uq_pair_date (pair, open_date)
 ) COMMENT = '코인 일배치 정보 테이블';
 
--- 코인 시간배치 정보 테이블
+-- 시간배치 정보 테이블(시간코인정보)
 DROP TABLE IF EXISTS coin_info_hourly;
 CREATE TABLE coin_info_hourly (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '기본키',
@@ -60,6 +48,8 @@ CREATE TABLE coin_info_hourly (
     open_time DATETIME NOT NULL COMMENT '기준 시간 (1시간 단위)',
     current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',
     change_24h DECIMAL(10,4) COMMENT '24시간 가격 변동률 (%)',
+    change_7d DECIMAL(10,4) COMMENT '7일 가격 변동률 (%)',
+    change_30d DECIMAL(10,4) COMMENT '30일 가격 변동률 (%)',
     weather_today VARCHAR(20) COMMENT '오늘 시장 상태',
     market_cap_rank INT COMMENT '시가총액 순위',
     score_value DECIMAL(2,1) COMMENT '코인 스코어 (1.0 ~ 5.0)',
@@ -69,6 +59,59 @@ CREATE TABLE coin_info_hourly (
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
     UNIQUE KEY uq_pair_time (pair, open_time)
 ) COMMENT = '코인 시간배치 정보 테이블';
+
+-- 코인 기술적 지표 테이블
+DROP TABLE IF EXISTS coin_indicator;
+CREATE TABLE coin_indicator (
+    indicator_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '지표 테이블 PK',
+    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    ma_5 DECIMAL(20,8) COMMENT '5일 이동평균 (MA)',
+    ma_20 DECIMAL(20,8) COMMENT '20일 이동평균 (MA)',
+    ema_5 DECIMAL(20,8) COMMENT '5일 지수이동평균 (EMA)',
+    ema_20 DECIMAL(20,8) COMMENT '20일 지수이동평균 (EMA)',
+    rsi DECIMAL(5,2) COMMENT '상대강도지수 (RSI)',
+    macd DECIMAL(20,8) COMMENT 'MACD 값',
+    macd_signal DECIMAL(20,8) COMMENT 'MACD 시그널 라인',
+    macd_histogram DECIMAL(20,8) COMMENT 'MACD 히스토그램',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
+    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    INDEX idx_pair (pair)
+) COMMENT = '코인 기술적 지표 저장 테이블 (테이블별 입력 순번 관리)';
+
+-- 수익률 예측 테이블
+DROP TABLE IF EXISTS coin_prediction;
+CREATE TABLE coin_prediction (
+    predict_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '수익률 예측 PK',
+    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    predict_return DECIMAL(6,3) COMMENT '예측 수익률 (%)',
+    predict_direction VARCHAR(10) COMMENT '예측 방향 (up/down)',
+    rain_chance DECIMAL(5,2) COMMENT '비올 확률처럼 표현한 예측 신뢰도 (%)',
+    predict_time DATETIME COMMENT '예측 기준 시간',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
+    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    INDEX idx_pair (pair)
+) COMMENT = '코인 수익률 예측 결과 (강수확률 형태)';
+-------------------------------------------------------------------------------
+-- 여기서부터는 완성 테이블입니다.
+-------------------------------------------------------------------------------
+-- 코인 기본 마스터 정보 테이블
+DROP TABLE IF EXISTS coin_master;
+CREATE TABLE coin_master (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '코인 고유 ID',
+    name VARCHAR(50) NOT NULL COMMENT '코인 이름 (예: 비트코인)',
+    symbol VARCHAR(20) NOT NULL COMMENT '코인 심볼 (예: BTC)',
+    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    logo_url VARCHAR(255) COMMENT '코인 로고 이미지 URL',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시간',
+    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '삭제 시간',
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
+    UNIQUE KEY uq_pair (pair)
+) COMMENT = '코인 기본 마스터 정보 테이블';
 
 -- 바이낸스 1시간봉 OHLCV 데이터 테이블
 DROP TABLE IF EXISTS binance_ohlcv_1h;
@@ -183,7 +226,7 @@ CREATE TABLE exchange_rate (
 ) COMMENT = '환율 정보 테이블 (ExchangeRate.host 기준)';
 
 -------------------------------------------------------------------------------
--- 여기서부터는 테이블 설계가 임시입니다.
+-- 여기서부터는 임시 테이블입니다.
 -------------------------------------------------------------------------------
 -- 회원 성향 분석 테이블
 DROP TABLE IF EXISTS user_profile;
@@ -197,42 +240,6 @@ CREATE TABLE user_profile (
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
     deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
 ) COMMENT = '회원 성향 분석 테이블';
-
--- 코인 기술적 지표 테이블
-DROP TABLE IF EXISTS coin_indicator;
-CREATE TABLE coin_indicator (
-    indicator_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '지표 테이블 PK',
-    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-    ma_5 DECIMAL(20,8) COMMENT '5일 이동평균 (MA)',
-    ma_20 DECIMAL(20,8) COMMENT '20일 이동평균 (MA)',
-    ema_5 DECIMAL(20,8) COMMENT '5일 지수이동평균 (EMA)',
-    ema_20 DECIMAL(20,8) COMMENT '20일 지수이동평균 (EMA)',
-    rsi DECIMAL(5,2) COMMENT '상대강도지수 (RSI)',
-    macd DECIMAL(20,8) COMMENT 'MACD 값',
-    macd_signal DECIMAL(20,8) COMMENT 'MACD 시그널 라인',
-    macd_histogram DECIMAL(20,8) COMMENT 'MACD 히스토그램',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
-    INDEX idx_pair (pair)
-) COMMENT = '코인 기술적 지표 저장 테이블 (테이블별 입력 순번 관리)';
-
--- 수익률 예측 테이블
-DROP TABLE IF EXISTS coin_prediction;
-CREATE TABLE coin_prediction (
-    predict_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '수익률 예측 PK',
-    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-    predict_return DECIMAL(6,3) COMMENT '예측 수익률 (%)',
-    predict_direction VARCHAR(10) COMMENT '예측 방향 (up/down)',
-    rain_chance DECIMAL(5,2) COMMENT '비올 확률처럼 표현한 예측 신뢰도 (%)',
-    predict_time DATETIME COMMENT '예측 기준 시간',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
-    INDEX idx_pair (pair)
-) COMMENT = '코인 수익률 예측 결과 (강수확률 형태)';
 
 -- 시장 심리지수
 DROP TABLE IF EXISTS market_sentiment;
