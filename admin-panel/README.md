@@ -24,6 +24,14 @@ GOLD_API_KEY=GOLD_API_KEY
 EXCHANGE_API_KEY=EXCHANGE_API_KEY
 ```
 
+## 🔑 연동용 API 키 발급 안내
+
+| 연동 대상                  | 키 발급 URL                                                                                                    | 비고 또는 서비스명                 | .env 키명              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ---------------------- |
+| 바이낸스 API (시세, OHLCV) | [https://www.binance.com/en/my/settings/api-management](https://www.binance.com/en/my/settings/api-management) | 별도 키 없이 사용 가능             | (사용 안 함)           |
+| 공공데이터포털 (금 시세)   | [https://www.data.go.kr](https://www.data.go.kr)                                                               | 금융위원회\_일반상품시세정보       | `GOLD_API_KEY=...`     |
+| ExchangeRate.host (환율)   | [https://exchangerate.host](https://exchangerate.host)                                                         | 대시보드에서 확인 가능 (무료 사용) | `EXCHANGE_API_KEY=...` |
+
 ---
 
 ## 🚀 실행 방법
