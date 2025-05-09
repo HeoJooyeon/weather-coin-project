@@ -1,4 +1,3 @@
-// src/components/ExchangeRateForm.js
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -28,19 +27,22 @@ function ExchangeRateForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>환율 데이터 수집</h3>
-      <label>시작일</label>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-      />
-      <label>종료일</label>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-      />
+      <div>
+        <label>시작일자 : </label>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>종료일자 : </label>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </div>
       <button type="submit" disabled={loading}>
         {loading ? "불러오는 중..." : "불러오기"}
       </button>

@@ -29,7 +29,7 @@ function GoldForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>시작일자</label>
+        <label>시작일자 : </label>
         <input
           type="date"
           value={startDate}
@@ -37,7 +37,7 @@ function GoldForm() {
         />
       </div>
       <div>
-        <label>종료일자</label>
+        <label>종료일자 : </label>
         <input
           type="date"
           value={endDate}

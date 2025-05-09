@@ -59,7 +59,7 @@ function OhlcvForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>Pair (예: BTCUSDT)</label>
+        <label>Pair (예: BTCUSDT) : </label>
         <input
           type="text"
           value={pair}
@@ -67,7 +67,7 @@ function OhlcvForm() {
         />
       </div>
       <div>
-        <label>시작일자</label>
+        <label>시작일자 : </label>
         <input
           type="date"
           value={startDate}
@@ -75,7 +75,7 @@ function OhlcvForm() {
         />
       </div>
       <div>
-        <label>종료일자</label>
+        <label>종료일자 : </label>
         <input
           type="date"
           value={endDate}
