@@ -92,17 +92,19 @@ def input_coin_info(coin_change_rate):
             open_times = coin_change["open_time"]
             current_prices = coin_change["current_price"]
             scores = coin_change["score_value"]    
+            score_texts = coin_change["score_text"]
             days = coin_change["daily_change"]
             weeks = coin_change["week_change"]
             months = coin_change["month_change"]
             
-            for pair, open_time, current_price, score, day, week, month in zip(pairs, open_times, current_prices, scores, days, weeks, months):
+            
+            for pair, open_time, current_price, score, score_text, day, week, month in zip(pairs, open_times, current_prices, scores, score_texts, days, weeks, months):
                 print("===========================")
                 # print(pair, open_time, current_price, score, day, week, month)                       
             
                 cur.execute(f"""
                     INSERT INTO coin_info_daily(pair,open_time,current_price,change_24h,change_7d,change_30d,weather_yesterday,weather_today,weather_tomorrow,market_cap_rank,score_value,created_at,updated_at,deleted_at)
-                    VALUES(%s,%s,%s,%s,%s,%s,"none","none","none",1,%s,NOW(),NOW(),NOW())
+                    VALUES(%s,%s,%s,%s,%s,%s,"none",%s,"none",1,%s,NOW(),NOW(),NOW())
                     ON DUPLICATE KEY UPDATE 
                         current_price = VALUES(current_price),
                         change_24h = VALUES(change_24h),
@@ -114,7 +116,7 @@ def input_coin_info(coin_change_rate):
                         market_cap_rank = VALUES(market_cap_rank),
                         score_value = VALUES(score_value),
                         updated_at = NOW()
-                """,(pair,open_time,current_price,day,week,month,score))
+                """,(pair,open_time,current_price,day,week,month,score_text, score))
             
         connection.commit()
         

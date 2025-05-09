@@ -55,14 +55,20 @@ def calculate_score(coin_by_pair):
     coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
     score_lists = {}
     results = []
-        
+    score_mapping = {
+        -2: "so bad",
+        -1: "bad",
+        0: "so so",
+        1: "good",
+        2: "so good",
+    } 
     
     for coin_pair in coin_by_pair:
         score = 0
         latest_row = coin_pair.iloc[-1]
         # rsi 조건
         rsi = latest_row["rsi"]
-        print(latest_row)   
+        # print(latest_row)   
         if rsi < 30:
             score += 1
         elif rsi > 70:
@@ -91,12 +97,16 @@ def calculate_score(coin_by_pair):
    
         coin_last = latest_row.to_frame().T
         coin_last["score"] = score
-        results.append(coin_last)   
+        
+        coin_last["score_text"] = coin_last["score"].map(score_mapping)
+        results.append(coin_last)
         
     return results
-    
+
+
 if __name__ == "__main__":    
     df = index()
     coin_by_pair = count_rate(df)
     coin_score = calculate_score(coin_by_pair)
     print(coin_score)
+    

@@ -55,6 +55,7 @@ def create_coin_info_table():
                 current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',                
                 market_cap_rank INT COMMENT '시가총액 순위',
                 score_value DECIMAL(2,1) COMMENT '코인 스코어 (1.0 ~ 5.0)',
+                score_text VARCHAR(10) COMMENT '코인 텍스트',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시간',
                 deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '삭제 시간',
@@ -84,13 +85,14 @@ def input_coin_info(scores):
             open_times = coin_score["open_time"]
             close_prices = coin_score["close_price"]
             scores = coin_score["score"]
+            score_texts = coin_score["score_text"]
             
-            for pair, open_time, close_prices, score in zip(pairs, open_times, close_prices, scores):
+            for pair, open_time, close_prices, score, score_text in zip(pairs, open_times, close_prices, scores, score_texts):
                         
                 cur.execute(f"""
-                    INSERT INTO coin_info_temporary(pair,open_time,current_price,market_cap_rank,score_value,created_at,updated_at,deleted_at)
-                    VALUES(%s,%s,%s,1,%s,NOW(),NOW(),NOW())
-                """,(pair,open_time,close_prices,score))
+                    INSERT INTO coin_info_temporary(pair,open_time,current_price,market_cap_rank,score_value,score_text,created_at,updated_at,deleted_at)
+                    VALUES(%s,%s,%s,1,%s,%s,NOW(),NOW(),NOW())
+                """,(pair,open_time,close_prices,score,score_text))
             
         connection.commit()
         print("MySQL 저장 완료")
