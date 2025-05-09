@@ -3,9 +3,7 @@
 ## ⚠️ 주의: DB 설정
 
 - `db/db.js` 파일 내에 MySQL 접속 정보가 하드코딩되어 있습니다.
-- 운영환경에서는 `.env` 파일을 통해 민감 정보는 **절대 커밋하지 마세요**.
 
-예시 `.env`:
 ```env
 DB_HOST=localhost
 DB_USER=root
@@ -17,6 +15,8 @@ DB_PORT=3306
 ---
 
 ## 🛠️ .env 환경 설정
+
+- 운영환경에서는 `.env` 파일을 통해 민감 정보는 **절대 커밋하지 마세요**.
 
 ```env
 PORT=5000
@@ -55,19 +55,25 @@ EXCHANGE_API_KEY=EXCHANGE_API_KEY
 - 프론트엔드에서 **시작일 ~ 종료일** 입력 시 아래 API 호출
 - Express 서버에서 외부 API 요청 후 데이터를 가공하여 **MySQL DB에 저장**
 
-| API 경로                        | 설명                              |
-|----------------------------------|-------------------------------------|
-| `POST /api/fetch-ohlcv`         | 바이낸스 OHLCV(1시간봉) 데이터 저장 |
-| `POST /api/fetch-gold`          | 한국금거래소 금 시세 저장          |
-| `POST /api/exchange-rate`       | 환율 API 데이터 저장               |
+| API 경로                  | 설명                                   |
+| ------------------------- | -------------------------------------- |
+| `POST /api/fetch-ohlcv`   | 바이낸스 OHLCV(1시간봉) 데이터 저장    |
+| `POST /api/fetch-gold`    | 공공데이터포털 금 시세 저장 API        |
+| `POST /api/exchange-rate` | ExchangeRate.host API를 통한 환율 저장 |
 
 ---
 
 ## ✅ 2. 코인마스터 정보 관리 기능
 
-- 등록된 코인마스터 정보를 **추가/수정/삭제** 가능
-- 주요 항목: `코인 이름`, `심볼`, `상태`, `설명`
-- 추후 **자동 연동 기능** 확장 고려 가능
+- `coin_master` 테이블을 기반으로 코인 정보를 **추가 / 수정 / 삭제** 가능
+- 주요 관리 항목:
+  - `name` (코인 이름, 예: 비트코인)
+  - `symbol` (코인 심볼, 예: BTC)
+  - `pair` (거래쌍, 예: BTCUSDT)
+  - `logo_url` (로고 이미지 URL)
+- **논리 삭제**(`deleted_yn`, `deleted_at`) 방식 사용
+- 중복 거래쌍 방지를 위한 `UNIQUE KEY(pair)` 적용
+- 추후 **거래소 API 연동을 통한 자동 갱신** 기능도 확장 고려 가능
 
 ---
 
@@ -78,6 +84,7 @@ EXCHANGE_API_KEY=EXCHANGE_API_KEY
 - 최소 인증 수준 → 추후 JWT 등으로 확장 가능
 
 ---
+
 ## ✅ 4. 명령어 실행 기능
 
 - 사용자 입력 CMD/Shell 명령어 실행 → 결과 출력
