@@ -2,7 +2,7 @@
 
 ## ⚠️ 주의: DB 설정
 
-- `db/db.js` 파일 내에 MySQL 접속 정보가 하드코딩되어 있습니다.
+- `server/db/db.js` 파일 내에 MySQL 접속 정보가 하드코딩되어 있습니다.
 
 ```env
 DB_HOST=localhost
@@ -36,25 +36,26 @@ EXCHANGE_API_KEY=EXCHANGE_API_KEY
 
 ## 🚀 실행 방법
 
-1. 프로젝트 루트에서 백엔드(Node.js) 의존성 설치
+1. 백엔드 의존성 설치
 
-   ```bash
-   npm install
-   ```
+```bash
+cd server
+npm install
+```
 
-2. 프론트엔드(`src/` 기준)로 이동하여 의존성 설치
+2. 프론트엔드 의존성 설치
 
-   ```bash
-   cd src
-   npm install
-   ```
+```bash
+cd ../client
+npm install
+```
 
-3. React(포트 5000) + Express(포트 5001) 동시 실행
+3. 루트로 돌아와서 백엔드 + 프론트엔드 동시 실행
 
-   ```bash
-   cd ..
-   npm run start
-   ```
+```bash
+cd ..
+npm run start
+```
 
 ---
 
@@ -87,9 +88,9 @@ EXCHANGE_API_KEY=EXCHANGE_API_KEY
 
 ## ✅ 3. 유저 정보 관리 기능
 
-- **관리자 인증 기능 필요** (패스워드 또는 토큰 기반)
-- 기본은 단일 관리자용, 추후 **다중 사용자 확장 고려 가능**
-- 최소 인증 수준 → 추후 JWT 등으로 확장 가능
+- 회원 정보를 **추가 / 수정 / 삭제 / (비밀번호 초기화)** 가능
+- 비밀번호는 직접 수정하지 않으며, **초기화 버튼**을 통한 별도 처리 예정
+- 추후 관리자 인증(JWT) 기능 연동 가능
 
 ---
 
@@ -98,5 +99,3 @@ EXCHANGE_API_KEY=EXCHANGE_API_KEY
 - 사용자 입력 CMD/Shell 명령어 실행 → 결과 출력
 - `cd` 실행 시 디렉토리 상태 유지 (세션 지속)
 - **기본 디렉토리 초기화 버튼** 지원 → 초기 경로로 복구 가능
-
----
