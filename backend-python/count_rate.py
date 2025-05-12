@@ -65,7 +65,7 @@ def calculate_score(coin_by_pair):
     
     for coin_pair in coin_by_pair:
         score = 0
-        latest_row = coin_pair.iloc[-1]
+        latest_row = coin_pair.iloc[-1] # max로 바꿔보실?
         # rsi 조건
         rsi = latest_row["rsi"]
         # print(latest_row)   
