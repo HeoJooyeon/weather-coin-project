@@ -1,7 +1,7 @@
 import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
-from config import coin_metadata
+# from config import coin_metadata
 
 # CSV 데이터 로딩 및 정렬 (3년 → X, 전체 중 최근 180일로 제한)
 df = pd.read_csv('./csv/binance_ohlcv_1h.csv', parse_dates=['open_time'])
@@ -44,8 +44,10 @@ def forecast_and_plot_prophet(df_prophet, coin_pair):
     plt.tight_layout()
     plt.show()
 
+coins = df
+
 # 메인 실행 루프
-for coin in coin_metadata:
+for coin in coins:
     try:
         df_prophet = get_coin_df_for_prophet(df, coin)
         forecast_and_plot_prophet(df_prophet, coin['pair'])

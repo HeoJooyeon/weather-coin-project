@@ -48,20 +48,28 @@ def create_coin_info_table():
         connection = get_db_connection()
         cur = connection.cursor()
         cur.execute(f"""
-            CREATE TABLE IF NOT EXISTS coin_info_temporary (
+            CREATE TABLE coin_info_daily (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '기본키',
                 pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 (예: BTCUSDT)',
-                open_time DATETIME NOT NULL COMMENT '기준 시간 (1시간 단위)',
-                current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',                
+                open_date DATE NOT NULL COMMENT '기준 날짜 (일 단위)',
+                current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',
+                change_24h DECIMAL(10,4) COMMENT '24시간 가격 변동률 (%)',
+                change_3Y DECIMAL(10,4) COMMENT '3년전 가격 변동률 (%)',
+
+                change_2Y DECIMAL(10,4) COMMENT '2년전 가격 변동률 (%)',
+
+                change_1Y DECIMAL(10,4) COMMENT '1년전 가격 변동률 (%)',
+                weather_yesterday VARCHAR(20) COMMENT '어제 시장 상태(48시간전)',
+                weather_today VARCHAR(20) COMMENT '오늘 시장 상태(24시간전)',
+                weather_tomorrow VARCHAR(20) COMMENT '예측된 내일 시장 상태(당일 09시)',
                 market_cap_rank INT COMMENT '시가총액 순위',
                 score_value DECIMAL(2,1) COMMENT '코인 스코어 (1.0 ~ 5.0)',
-                score_text VARCHAR(10) COMMENT '코인 텍스트',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시간',
                 deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '삭제 시간',
                 deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
-                UNIQUE KEY uq_pair_time (pair, open_time)
-            ) COMMENT = '코인 시간배치 정보 테이블';
+                UNIQUE KEY uq_pair_date (pair, open_date)
+            ) COMMENT = '코인 일배치 정보 테이블';
         """)
         # table 생성 필요 없음
         connection.commit()
