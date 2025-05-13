@@ -76,7 +76,7 @@ def fetch_coin_to_mysql(query = "BTC"):
                     cur.execute(f"""
                         INSERT INTO binance_ohlcv_1h(pair, open_time, open_price, high_price, low_price, close_price, base_vol, close_time, quote_vol, trade_count, tb_base_vol, tb_quote_vol, created_at)
                         VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())                        
-                    """, (coin, open_time, open_price, high_price, low_price, close_price, base_vol, close_time, quote_vol, trade_count, tb_base_vol[:20], tb_quote_vol))
+                    """, (coin, open_time, open_price, high_price, low_price, close_price, round(float(base_vol) / 1000000, 8), close_time, quote_vol, trade_count, round(float(tb_base_vol)/ 1000000, 8), tb_quote_vol))
                     
                 
                 # SQL에 저장 후 종료 
@@ -84,8 +84,10 @@ def fetch_coin_to_mysql(query = "BTC"):
                 connection.commit()                
                 print("MySQL 저장 완료")
                 
+                
             except pymysql.MySQLError as e:
                 print(f"데이터 삽입 오류: {e}")
+                print(round(float(base_vol), 10))
             except Exception as e:
                 print(f"기타 오류: {e}")        
             
