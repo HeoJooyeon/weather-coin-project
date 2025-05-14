@@ -1,0 +1,37 @@
+# Node modules
+node_modules/
+
+# 환경 설정
+.env
+.env.* 
+
+# 로그 파일
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# 운영 시스템 파일
+.DS_Store
+Thumbs.db
+
+# 빌드 결과물 (있다면)
+dist/
+build/
+
+# Swagger 자동 생성 파일 (옵션)
+swagger.json
+swagger.yaml
+
+# MySQL 데이터 덤프/CSV 결과 (필요 시 제외)
+*.sql
+*.csv
+
+# IDE/에디터 설정
+.vscode/
+.idea/
+
+# OS 백업
+*.swp
+*~
