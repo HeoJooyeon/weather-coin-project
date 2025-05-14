@@ -43,7 +43,7 @@ def get_coin_df_for_prophet(df, coin_dict):
 
     # 최근 90일로 제한
     latest_time = coin_df['ds'].max()
-    coin_df = coin_df[coin_df['ds'] > latest_time - pd.Timedelta(days=90)]
+    coin_df = coin_df[coin_df['ds'] > latest_time - pd.Timedelta(days=180)]
 
     # float형 강제 변환
     coin_df['y'] = coin_df['y'].astype(float)
