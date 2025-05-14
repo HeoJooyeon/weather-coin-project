@@ -1,0 +1,19 @@
+{
+  "name": "weather-coin-project",
+  "private": true,
+  "workspaces": [
+    "admin-panel",
+    "client-react",
+    "server-node"
+  ],
+  "scripts": {
+    "start:admin": "npm --workspace admin-panel start",
+    "start:client": "npm --workspace client-react start",
+    "start:server": "npm --workspace server-node start",
+    "start:python": "cd backend-python && python app.py",
+    "start:all": "concurrently \"npm run start:admin\" \"npm run start:client\" \"npm run start:server\" \"npm run start:python\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
