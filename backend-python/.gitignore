@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env
+venv/
+env/
+.Python
+
+# Logs
+logs/
+*.log
+
+# OS/Editor-specific
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Flask instance folder (if used)
+instance/
+
+# Test output
+coverage/
+*.cover
+.cache
+
+# Jupyter Notebooks (if used)
+.ipynb_checkpoints/
+
+# macOS system file
+.DS_Store
