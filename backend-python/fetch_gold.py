@@ -19,45 +19,14 @@ def connect_mysql():
         password="981021",
         db="gold_info_db",
         charset="utf8mb4"
-    )
-
-def create_table():
-    try:
-        
-        connection = connect_mysql()
-        cur = connection.cursor()
-        cur.execute(f"""
-               CREATE TABLE gold_price (
-                    gold_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '금 시세 PK',
-                    currency_code VARCHAR(10) NOT NULL COMMENT '통화 코드 (예: USD, KRW)',                    
-                    price_per_kilogram DECIMAL(20, 4) COMMENT '1킬로그램당 금 가격',
-                    data_time DATETIME NOT NULL COMMENT '시세 기준 시각',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 수집 시각',
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-                    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-                    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)'
-                ) COMMENT = '금 시세 정보 테이블 (GoldPricez 기준)';
-            """)
-        connection.commit()
-        print("테이블 생성 완료")
-        
-    except pymysql.MySQLError as e:
-        print(f"테이블 생성 오류: {e}")
-    
-    finally:
-        if connection:
-            connection.close()            
-    
+    )    
 
 def fetch_coin_to_mysql(query = "BTC"):
     
     try:       
         gold_api_key = os.environ.get("gold_api_key")
         connection = connect_mysql()
-        cur = connection.cursor()
-        trigger = True
-        page_num = 1        
-        
+        cur = connection.cursor()        
         
         # 배열에 담긴 코인들 정보 api로 불러오기
         url = f"http://apis.data.go.kr/1160100/service/GetGeneralProductInfoService/getGoldPriceInfo?serviceKey={gold_api_key}&resultType=json&itmsNm=%EA%B8%88%2099.99_1Kg"
@@ -113,7 +82,6 @@ def run_schedule():
 
 schedule.every(15).seconds.do(job) # 실행할 작업 예약 // 지정한 시간마다 실행 가능한 상태로 변경
 
-if __name__ == "__main__":
-    create_table()
+if __name__ == "__main__":    
     job()
     run_schedule()

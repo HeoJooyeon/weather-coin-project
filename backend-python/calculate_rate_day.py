@@ -77,21 +77,21 @@ def calculate_score(coin_df):
         df["sma_50"] = ta.sma(df["close_price"], length=50)
         scores = []
         score_texts = []
-        # latest_row = df.iloc[-1]
+        
         for _, row in df.iterrows():
             
             score = 0            
         
             # rsi 조건
-            rsi = row.get("rsi", 0)
-            # print(latest_row)   
-            if row['rsi'] < 20:
+            rsi = row.get("rsi", 0) # rsi 열이 존재할 시 rsi 출력, 없으면 0 출력
+            
+            if rsi < 20:
                 score += 2 
-            elif row['rsi'] < 30:
+            elif rsi < 30:
                 score += 1
-            elif row['rsi'] > 80:
+            elif rsi > 80:
                 score -= 2 
-            elif row['rsi'] > 70:
+            elif rsi > 70:
                 score -= 1               
             
             # macd 조건
@@ -104,7 +104,6 @@ def calculate_score(coin_df):
                 score -= 2
             elif macd_diff < 0:
                 score -= 1
-
                             
             # sma 조건
             sma_20 = row.get("sma_20", 0)
@@ -114,11 +113,10 @@ def calculate_score(coin_df):
             if sma_20 > sma_50:
                 score += 1
             else:
-                score -= 1        
-
-            # pair = latest_row["pair"] 
-            # score_lists[pair] = score        
-    
+                score -= 1 
+            
+            score = max(-2, min(score, 2))
+                
             scores.append(score)
             score_texts.append(score_mapping.get(score, "unknown"))
         
@@ -167,5 +165,5 @@ if __name__ == "__main__":
     coin_indicators = calcurate_indicators(df)    
     coin_scores = calculate_score(coin_indicators)
     input_coin_indicator(coin_scores)
-    # print("coin_score",coin_scores)
+    
     

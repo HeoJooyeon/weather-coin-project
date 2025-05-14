@@ -60,14 +60,13 @@ def calcurate_indicators(df):
         coin_results.append(coin_df.fillna(0))
     return coin_results  
 
-def input_coin_indicator(coin_scores):      
+def input_coin_indicator(coin_indicators):
         
-    # score    
     try:
         connection = get_db_connection()
         cur = connection.cursor()
         
-        for df in coin_scores:
+        for df in coin_indicators:
             for _, row in df.iterrows():
                 cur.execute("""
                     INSERT INTO coin_indicator_hour(
@@ -97,5 +96,5 @@ if __name__ == "__main__":
     df = load_coin_data()
     coin_indicators = calcurate_indicators(df)      
     input_coin_indicator(coin_indicators)
-    # print("coin_score",coin_indicators)
+    
     

@@ -14,42 +14,9 @@ def connect_mysql():
         password="981021",
         db="coin_info_db",
         charset="utf8mb4"
-    )
+    )    
 
-def create_table():
-    try:
-        connection = connect_mysql()
-        cur = connection.cursor()
-        cur.execute(f"""
-               CREATE TABLE IF NOT EXISTS binance_ohlcv_1h (
-                    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '바이낸스 코인 데이터 PK',
-                    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-                    open_time DATETIME NOT NULL COMMENT '시가 기준 시작 시간',
-                    open_price DECIMAL(20,8) NOT NULL COMMENT '시가 (가격, Open)',
-                    high_price DECIMAL(20,8) NOT NULL COMMENT '고가 (가격, High)',
-                    low_price DECIMAL(20,8) NOT NULL COMMENT '저가 (가격, Low)',
-                    close_price DECIMAL(20,8) NOT NULL COMMENT '종가 (가격, Close)',
-                    base_vol DECIMAL(20,8) NOT NULL COMMENT '코인 기준 거래량',
-                    close_time DATETIME NOT NULL COMMENT '종가 기준 종료 시간',
-                    quote_vol DECIMAL(20,8) COMMENT 'USDT 기준 거래량',
-                    trade_count INT COMMENT '거래 횟수',
-                    tb_base_vol DECIMAL(20,8) COMMENT '매수자 코인 거래량',
-                    tb_quote_vol DECIMAL(20,8) COMMENT '매수자 USDT 거래량',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시'
-                ) COMMENT = '바이낸스 1시간봉 OHLCV 데이터 테이블';
-            """)
-        connection.commit()
-        print("테이블 생성 완료")
-        
-    except pymysql.MySQLError as e:
-        print(f"테이블 생성 오류: {e}")
-    
-    finally:
-        if connection:
-            connection.close()            
-    
-
-def fetch_coin_to_mysql(query = "BTC"):
+def fetch_coin_to_mysql():
     coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]    
     
     try:
@@ -100,7 +67,7 @@ def fetch_coin_to_mysql(query = "BTC"):
 # fetch_coin_to_mysql 함수 실행
 def job():
     print("데이터 삽입 시작")
-    fetch_coin_to_mysql(query="BTC")
+    fetch_coin_to_mysql()
     print("데이터 삽입 완료")
 
 # 1초 간격으로 schedule 상태 확인
@@ -111,7 +78,6 @@ def run_schedule():
 
 schedule.every(30).seconds.do(job) # 실행할 작업 예약 // 지정한 시간마다 실행 가능한 상태로 변경
 
-if __name__ == "__main__":
-    create_table()
+if __name__ == "__main__":    
     job()
     run_schedule()
