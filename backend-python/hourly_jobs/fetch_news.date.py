@@ -20,32 +20,7 @@ def connect_mysql():
         password="981021",
         db="news_info_db",
         charset="utf8mb4"
-    )
-
-def create_table():
-    try:
-        connection = connect_mysql()
-        cur = connection.cursor()
-        cur.execute(f"""
-                
-                CREATE TABLE IF NOT EXISTS coin_news_sim (
-                    news_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '뉴스 PK',
-                    title VARCHAR(255) NOT NULL COMMENT '뉴스 제목',
-                    content TEXT NOT NULL COMMENT '뉴스 내용',
-                    url VARCHAR(500) COMMENT '뉴스 원본 URL',
-                    publish_time DATETIME COMMENT '기사 발행 시각',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 등록 일시'
-                ) COMMENT = '코인 관련 뉴스 테이블';
-            """)
-        connection.commit()
-        print("테이블 생성 완료")
-        
-    except pymysql.MySQLError as e:
-        print(f"테이블 생성 오류: {e}")
-    
-    finally:
-        if connection:
-            connection.close()            
+    )       
     
 
 def fetch_coin_to_mysql(query = "BTC"):
@@ -62,7 +37,7 @@ def fetch_coin_to_mysql(query = "BTC"):
                 # 배열에 담긴 코인들 정보 api로 불러오기
                 
                 encText = urllib.parse.quote(coin)
-                url = f"https://openapi.naver.com/v1/search/news.json?query={encText}&sort=sim" 
+                url = f"https://openapi.naver.com/v1/search/news.json?query={encText}&sort=date" 
                 request = urllib.request.Request(url)
                 request.add_header("X-Naver-Client-Id",client_id)
                 request.add_header("X-Naver-Client-Secret",client_secret)
@@ -87,7 +62,7 @@ def fetch_coin_to_mysql(query = "BTC"):
                             # print(title_without_tag)
                             # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
                             cur.execute(f"""
-                                INSERT INTO coin_news_sim(title, url, content, publish_time, created_at)
+                                INSERT INTO coin_news_date(title, url, content, publish_time, created_at)
                                 VALUES(%s, %s, %s, %s, NOW())                        
                             """, (title_without_tag, url_without_tag, content_without_tag, publish_time))
                     else:
@@ -130,6 +105,5 @@ def run_schedule():
 
 schedule.every(1).hours.do(job) # 실행할 작업 예약 // 지정한 시간마다 실행 가능한 상태로 변경 """
 
-if __name__ == "__main__":
-    create_table()
+if __name__ == "__main__":    
     job()

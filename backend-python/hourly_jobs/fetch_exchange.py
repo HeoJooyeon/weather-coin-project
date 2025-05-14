@@ -66,14 +66,14 @@ def job():
     fetch_exchange_1year_to_mysql()
     print("데이터 삽입 완료")
 
-# 1초 간격으로 schedule 상태 확인
-def run_schedule():
-    while True:
-        schedule.run_pending() # schedule이 실행 가능한 상태일 시 즉시 실행
-        time.sleep(10) # 10초마다 run_schedule 실행 (CPU 폭주 방지 => 작성하지 않을 시 무한으로 코드 호출)
+# # 1초 간격으로 schedule 상태 확인
+# def run_schedule():
+#     while True:
+#         schedule.run_pending() # schedule이 실행 가능한 상태일 시 즉시 실행
+#         time.sleep(10) # 10초마다 run_schedule 실행 (CPU 폭주 방지 => 작성하지 않을 시 무한으로 코드 호출)
 
-schedule.every(15).seconds.do(job) # 실행할 작업 예약 // 지정한 시간마다 실행 가능한 상태로 변경
+# schedule.every(15).seconds.do(job) # 실행할 작업 예약 // 지정한 시간마다 실행 가능한 상태로 변경
 
 if __name__ == "__main__":
     job()
-    run_schedule()
+    
