@@ -14,20 +14,20 @@ def get_db_connection():
     )
     
 def fetch_coin_info():
-    # connection = get_db_connection()           
+    connection = get_db_connection()           
     
-    # query = f"""
-    #     SELECT * FROM coin_indicator_day;        
-    # """
+    query = f"""
+        SELECT * FROM binance_ohlcv_1h;        
+    """
     
-    # indicator_df = pd.read_sql(query, connection)   
+    coin_df = pd.read_sql(query, connection)   
     
-    # connection.close()
+    connection.close()
     
-    three_years_df = pd.read_csv("./csv/ohlcv_data.csv")
-    three_years_df["open_time"] = pd.to_datetime(three_years_df["open_time"])
+    # three_years_df = pd.read_csv("./csv/ohlcv_data.csv")
+    # three_years_df["open_time"] = pd.to_datetime(three_years_df["open_time"])
     # print(df["open_time"].dtype)
-    df_day = three_years_df[three_years_df["open_time"].dt.hour == 0]
+    df_day = coin_df[coin_df["open_time"].dt.hour == 0]    
     
     return df_day
     
@@ -37,7 +37,7 @@ def calculate_change_rate(df_day):
     date_change = []
     for coin in coins:
         
-        coin_date_change = df_day[df_day["pair"] == f"{coin}USDT"]    
+        coin_date_change = df_day[df_day["pair"] == f"{coin}"]    
         # print(coin_date_change)
         
         # # 일 단위 변동률
@@ -51,6 +51,7 @@ def calculate_change_rate(df_day):
         
         for idx, row in coin_date_change.iterrows():
             # 각 행을 모두 변수에 저장
+            
             current_date = row["open_time"]
             # 현재 행을 기준으로 2년 전 데이터 변수에 저장
             for y in years:
@@ -74,7 +75,7 @@ def calculate_change_rate(df_day):
         coin_date_change = coin_date_change.infer_objects(copy=False)
         
         date_change.append(coin_date_change)
-                
+    
     return date_change    
 
 def input_coin_change(coin_changes):
