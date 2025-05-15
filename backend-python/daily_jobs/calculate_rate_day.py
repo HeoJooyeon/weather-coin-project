@@ -66,11 +66,11 @@ def calculate_score(coin_df):
     score_lists = {}
     results = []
     score_mapping = {
-        -2: "so bad",
-        -1: "bad",
-        0: "so so",
-        1: "good",
-        2: "so good",
+        1: "so bad",
+        2: "bad",
+        3: "so so",
+        4: "good",
+        5: "so good",
     } 
     
     for df in coin_df:
@@ -80,7 +80,7 @@ def calculate_score(coin_df):
         
         for _, row in df.iterrows():
             
-            score = 0            
+            score = 3            
         
             # rsi 조건
             rsi = row.get("rsi", 0) # rsi 열이 존재할 시 rsi 출력, 없으면 0 출력
@@ -115,7 +115,7 @@ def calculate_score(coin_df):
             else:
                 score -= 1 
             
-            score = max(-2, min(score, 2))
+            score = max(1, min(score, 5))
                 
             scores.append(score)
             score_texts.append(score_mapping.get(score, "unknown"))
