@@ -43,28 +43,95 @@ def run_python_file(filepath, job_type='general'):
 # 서버 시작 시 일괄 실행
 def run_all_on_startup():
     print("[INFO] Running all daily and hourly jobs at server startup...")
-    for filename in os.listdir(DAILY_DIR):
-        if filename.endswith('.py'):
-            run_python_file(os.path.join(DAILY_DIR, filename), job_type='daily')
-    for filename in os.listdir(HOURLY_DIR):
-        if filename.endswith('.py'):
-            run_python_file(os.path.join(HOURLY_DIR, filename), job_type='hourly')
+
+    # 시간 배치 순서 지정
+    hourly_files = [
+        'fetch_coin.py',
+        'calculate_rate_hour.py',
+        'fetch_news_sim.py',
+        'fetch_news_date.py'
+    ]
+    for filename in hourly_files:
+        filepath = os.path.join(HOURLY_DIR, filename)
+        if os.path.isfile(filepath):
+            run_python_file(filepath, job_type='hourly')
+        else:
+            print(f"[WARNING] Hourly file not found: {filename}")
+
+    # 일 배치 순서 지정
+    daily_files = [
+        'fetch_coin_logo.py',
+        'calculate_rate_day.py',
+        'calculate_change_rate.py',
+        'calculate_prophet.py',
+        'fetch_exchange.py',
+        'fetch_gold.py'
+    ]
+    for filename in daily_files:
+        filepath = os.path.join(DAILY_DIR, filename)
+        if os.path.isfile(filepath):
+            run_python_file(filepath, job_type='daily')
+        else:
+            print(f"[WARNING] Daily file not found: {filename}")
+
 
 @app.route('/run/daily', methods=['POST'])
 def run_daily():
     filename = request.json.get('file')
+
+    if filename == "all":
+        daily_files = [
+            'fetch_coin_logo.py',
+            'calculate_rate_day.py',
+            'calculate_change_rate.py',
+            'calculate_prophet.py',
+            'fetch_exchange.py',
+            'fetch_gold.py'
+        ]
+        results = []
+        for fname in daily_files:
+            path = os.path.join(DAILY_DIR, fname)
+            if os.path.isfile(path):
+                result = run_python_file(path, job_type='daily')
+                results.append({fname: result})
+            else:
+                results.append({fname: {'status': 'error', 'output': 'File not found'}})
+        return jsonify(results)
+
+    # 단일 파일 실행
     filepath = os.path.join(DAILY_DIR, filename)
     if not os.path.isfile(filepath):
         return jsonify({'error': 'File not found'}), 404
     return jsonify(run_python_file(filepath, job_type='daily'))
 
+
 @app.route('/run/hourly', methods=['POST'])
 def run_hourly():
     filename = request.json.get('file')
+
+    if filename == "all":
+        hourly_files = [
+            'fetch_coin.py',
+            'calculate_rate_hour.py',
+            'fetch_news_sim.py',
+            'fetch_news_date.py'
+        ]
+        results = []
+        for fname in hourly_files:
+            path = os.path.join(HOURLY_DIR, fname)
+            if os.path.isfile(path):
+                result = run_python_file(path, job_type='hourly')
+                results.append({fname: result})
+            else:
+                results.append({fname: {'status': 'error', 'output': 'File not found'}})
+        return jsonify(results)
+
+    # 단일 파일 실행
     filepath = os.path.join(HOURLY_DIR, filename)
     if not os.path.isfile(filepath):
         return jsonify({'error': 'File not found'}), 404
     return jsonify(run_python_file(filepath, job_type='hourly'))
+
 
 if __name__ == '__main__':
     run_all_on_startup()
