@@ -33,11 +33,13 @@ async function fetchAndStoreGoldPrices(startDate, endDate) {
 
         resultData.push([
           item.basDt,
+          "KRW",
           itemName,
           price,
           weightKg,
           pricePerGram.toFixed(4),
           pricePerOunce.toFixed(4),
+          price,
         ]);
       }
     } catch (err) {
@@ -50,7 +52,7 @@ async function fetchAndStoreGoldPrices(startDate, endDate) {
   if (resultData.length > 0) {
     const sql = `
       INSERT IGNORE INTO gold_price
-      (base_date, item_name, price_krw, weight_kg, price_per_gram, price_per_ounce)
+      (base_date, currency_code, item_name, price_krw, weight_kg, price_per_gram, price_per_ounce, price_per_kilogram)
       VALUES ?
     `;
     await db.query(sql, [resultData]);
