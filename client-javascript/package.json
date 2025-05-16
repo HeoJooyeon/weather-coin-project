@@ -1,0 +1,21 @@
+{
+  "name": "protopage",
+  "version": "1.0.0",
+  "description": "암호화폐 시세 예측 플랫폼",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "crypto",
+    "prediction",
+    "finance"
+  ],
+  "author": "moon",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "parcel": "^2.14.4"
+  }
+}

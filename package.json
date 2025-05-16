@@ -3,12 +3,12 @@
   "private": true,
   "workspaces": [
     "admin-panel",
-    "client-react",
+    "client-javascript",
     "server-node"
   ],
   "scripts": {
     "start:admin": "npm --workspace admin-panel start",
-    "start:client": "npm --workspace client-react start",
+    "start:client": "npm --workspace client-javascript start",
     "start:server": "npm --workspace server-node start",
     "start:python": "cd backend-python && python app.py",
     "start:all": "concurrently \"npm run start:admin\" \"npm run start:client\" \"npm run start:server\" \"npm run start:python\""
