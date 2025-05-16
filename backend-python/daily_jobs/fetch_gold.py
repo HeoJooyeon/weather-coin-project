@@ -1,29 +1,25 @@
-from flask import Flask, render_template, request
 from datetime import datetime
 import requests
 import pymysql
-import time
-import xml
-import xml.etree.ElementTree as ET
-from datetime import date
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
-# MySQL 연결
 def connect_mysql():
     return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="1111",
-        db="weathercoin",
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        db=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT")),
         charset="utf8mb4"
-    )    
+    )
 
 def fetch_coin_to_mysql(query = "BTC"):
     
     try:       
-        gold_api_key = os.environ.get("gold_api_key")
+        gold_api_key = os.environ.get("GOLD_API_KEY")
         connection = connect_mysql()
         cur = connection.cursor()        
         

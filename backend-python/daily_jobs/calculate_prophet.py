@@ -2,15 +2,21 @@ import pandas as pd
 from prophet import Prophet
 from datetime import timedelta
 import pymysql
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_db_connection():
     return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="1111",
-        db="weathercoin",
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        db=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT")),
         charset="utf8mb4"
     )
+
 coin_metadata = [
     {"rank": 1, "name": "비트코인", "symbol": "BTC", "pair": "BTCUSDT"},
     {"rank": 2, "name": "이더리움", "symbol": "ETH", "pair": "ETHUSDT"},

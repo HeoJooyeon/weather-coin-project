@@ -1,34 +1,30 @@
-from flask import Flask, render_template, request
 from datetime import datetime
-import requests
 import pymysql
-import time
-import os
-import sys
 import urllib.request
 import json
-from dotenv import load_dotenv
 from datetime import datetime
+import os
+from dotenv import load_dotenv
 
 load_dotenv()
-# MySQL 연결
+
 def connect_mysql():
     return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="981021",
-        db="weathercoin",
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        db=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT")),
         charset="utf8mb4"
-    )       
+    )
     
-
 def fetch_coin_to_mysql(query = "BTC"):
     coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
     try:
         connection = connect_mysql()
         cur = connection.cursor()
-        client_id = os.environ.get("client_id")
-        client_secret = os.environ.get("client_secret")
+        client_id = os.environ.get("NAVER_CLIENT_ID")
+        client_secret = os.environ.get("NAVER_CLIENT_SECRET")
 
         print(f"client_id: {client_id}")
         for coin in coins:

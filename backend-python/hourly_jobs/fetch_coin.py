@@ -1,19 +1,21 @@
-from flask import Flask, render_template, request
 from datetime import datetime
 import requests
 import pymysql
-import time
 from datetime import datetime, date
+import os
+from dotenv import load_dotenv
 
-# MySQL 연결
+load_dotenv()
+
 def connect_mysql():
     return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="1111",
-        db="weathercoin",
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        db=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT")),
         charset="utf8mb4"
-    )    
+    )
 
 def fetch_coin_to_mysql():
     coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]    

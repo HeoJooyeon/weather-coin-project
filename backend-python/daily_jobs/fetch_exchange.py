@@ -1,21 +1,17 @@
-from flask import Flask, render_template, request
-from datetime import datetime
 import requests
 import pymysql
-import time
 import os
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
-# MySQL 연결
 def connect_mysql():
     return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="1111",
-        db="weathercoin",
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        db=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT")),
         charset="utf8mb4"
     )
  
@@ -26,7 +22,7 @@ def fetch_exchange_1year_to_mysql():
         connection = connect_mysql()
         cur = connection.cursor()
         # 환율 정보 api에서 파일 불러오기
-        api_key = os.environ.get("api_key")   
+        api_key = os.environ.get("EXCHANGE_API_KEY")   
         today = date.today()                                    
         
         # url = f"https://api.exchangerate.host/timeframe?access_key={api_key}&start_date=2025-05-01&end_date=2025-05-14&currencies=KRW"
