@@ -15,7 +15,6 @@ USE weathercoin;
 10. 라이트코인 (Litecoin)     - 심볼: LTC / 페어: LTCUSDT
 */
 
--------------------------------------------------------------------------------
 -- 일배치 테이블
 DROP TABLE IF EXISTS coin_past_info;
 CREATE TABLE coin_past_info (
@@ -27,10 +26,7 @@ CREATE TABLE coin_past_info (
     change_3Y DECIMAL(10,4) COMMENT '3년전 가격 변동률 (%)',
     change_2Y DECIMAL(10,4) COMMENT '2년전 가격 변동률 (%)',
     change_1Y DECIMAL(10,4) COMMENT '1년전 가격 변동률 (%)',
-    weather_yesterday VARCHAR(20) COMMENT '어제 시장 상태(48시간전)',
-    weather_today VARCHAR(20) COMMENT '오늘 시장 상태(24시간전)',
-    weather_tomorrow VARCHAR(20) COMMENT '예측된 내일 시장 상태(당일 00시)',
-    market_cap_rank INT COMMENT '시가총액 순위', 
+    market_cap_rank INT COMMENT '시가총액 순위',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시간',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '삭제 시간',
@@ -84,19 +80,18 @@ CREATE TABLE coin_indicator_hour(
 -- 수익률 예측 테이블
 DROP TABLE IF EXISTS coin_prediction;
 CREATE TABLE coin_prediction (
-predict_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '수익률 예측 PK',
-pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
-predict_return DECIMAL(6,3) COMMENT '예측 수익률 (%)',
-current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',
-predict_return_7d DECIMAL(6,3) COMMENT '7일 후 예측 수익률 (%)',
-predict_return_15d DECIMAL(6,3) COMMENT '15일 후 예측 수익률 (%)',
-predict_return_30d DECIMAL(6,3) COMMENT '30일 후 예측 수익률 (%)',
-predict_time DATETIME COMMENT '예측 기준 시간',
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
-deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
-deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
- INDEX idx_pair (pair)
+    predict_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '수익률 예측 PK',
+    pair VARCHAR(20) NOT NULL COMMENT '코인 거래쌍 이름 (예: BTCUSDT)',
+    current_price DECIMAL(20,8) COMMENT '현재 가격 (USDT 기준)',
+    predict_return_7d DECIMAL(6,3) COMMENT '7일 후 예측 수익률 (%)',
+    predict_return_15d DECIMAL(6,3) COMMENT '15일 후 예측 수익률 (%)',
+    predict_return_30d DECIMAL(6,3) COMMENT '30일 후 예측 수익률 (%)',
+    predict_time DATETIME COMMENT '예측 기준 시간',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 삽입 일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
+    deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',
+    deleted_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y:삭제됨, N:정상)',
+    INDEX idx_pair (pair)
 ) COMMENT = '코인 수익률 예측 결과';
 
 -- 코인 기본 마스터 정보 테이블
@@ -200,11 +195,13 @@ DROP TABLE IF EXISTS gold_price;
 CREATE TABLE gold_price (
     gold_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '금 시세 PK',
     base_date DATE NOT NULL COMMENT '기준일자',
+    currency_code VARCHAR(10) NOT NULL COMMENT '통화 코드 (예: USD, KRW)',
     item_name VARCHAR(100) NOT NULL COMMENT '금 상품명 (예: 금 99.99_1Kg)',
     price_krw INT NOT NULL COMMENT '종가 (원 단위)',
     weight_kg DECIMAL(10,4) COMMENT '무게 (kg)',
     price_per_gram DECIMAL(20,4) COMMENT '그램당 환산 가격',
     price_per_ounce DECIMAL(20,4) COMMENT '온스당 환산 가격',
+    price_per_kilogram DECIMAL(20, 4) COMMENT '킬로그램당 환산산 가격',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 수집 시각',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '데이터 수정 시간',
 	deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '데이터 삭제 시간',

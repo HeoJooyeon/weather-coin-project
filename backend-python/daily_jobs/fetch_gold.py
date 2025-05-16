@@ -50,7 +50,7 @@ def fetch_coin_to_mysql(query = "BTC"):
             
             # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
             cur.execute(f"""
-                INSERT INTO gold_price(currency_code, price_per_kilogram, data_time, created_at, updated_at, deleted_at)
+                INSERT INTO gold_price(currency_code, price_per_kilogram, base_date, created_at, updated_at, deleted_at)
                 VALUES("KRW", %s, %s, NOW(), NOW(), NOW())                        
             """, (price_per_kilogram, date_time))
             
