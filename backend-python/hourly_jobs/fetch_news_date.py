@@ -27,7 +27,6 @@ def fetch_coin_to_mysql(query = "BTC"):
         client_id = os.environ.get("NAVER_CLIENT_ID")
         client_secret = os.environ.get("NAVER_CLIENT_SECRET")
 
-        print(f"client_id: {client_id}")
         for coin in coins:
             try:
                 # 배열에 담긴 코인들 정보 api로 불러오기
