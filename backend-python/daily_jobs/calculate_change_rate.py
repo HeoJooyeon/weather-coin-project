@@ -8,8 +8,8 @@ def get_db_connection():
     return pymysql.connect(
         host="localhost",
         user="root",
-        password="981021",
-        db="coin_info_db",
+        password="1111",
+        db="weathercoin",
         charset="utf8mb4"
     )
     
@@ -72,7 +72,7 @@ def calculate_change_rate(df_day):
                 coin_date_change.at[idx, f"{y}_year_change"] = change # 현재 반복 중인 행(idx)과 열에 데이터 입력                    
         
         coin_date_change = coin_date_change.fillna(0)
-        coin_date_change = coin_date_change.infer_objects(copy=False)
+        coin_date_change = coin_date_change.infer_objects()
         
         date_change.append(coin_date_change)
     

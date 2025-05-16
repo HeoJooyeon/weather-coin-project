@@ -2,17 +2,17 @@ from flask import Flask, render_template, request
 import pymysql
 import pandas as pd
 import pandas_ta as ta
-import numpy as np
 import os
 from datetime import datetime, timedelta
+
 
 # DB 연결
 def get_db_connection():
     return pymysql.connect(
         host="localhost",
         user="root",
-        password="981021",
-        db="coin_info_db",
+        password="1111",
+        db="weathercoin",
         charset="utf8mb4"
     )
 
