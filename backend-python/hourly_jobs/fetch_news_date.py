@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import requests
 import pymysql
-import schedule
 import time
 import os
 import sys

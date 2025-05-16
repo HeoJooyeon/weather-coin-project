@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import requests
 import pymysql
-import schedule
 import time
 from datetime import datetime, date
 
@@ -11,8 +10,8 @@ def connect_mysql():
     return pymysql.connect(
         host="localhost",
         user="root",
-        password="981021",
-        db="coin_info_db",
+        password="1111",
+        db="weathercoin",
         charset="utf8mb4"
     )        
     
