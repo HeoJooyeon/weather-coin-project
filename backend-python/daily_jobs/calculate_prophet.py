@@ -8,7 +8,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="981021",
-        db="predict_info_db",
+        db="weathercoin",
         charset="utf8mb4"
     )
 coin_metadata = [
@@ -25,8 +25,20 @@ coin_metadata = [
 ]
 
 # CSV 데이터 로딩 및 정렬 (최근 90일만 불러올거임)
-df = pd.read_csv('./csv/binance_ohlcv_1h.csv', parse_dates=['open_time'])
-df.sort_values('open_time', inplace=True)
+# df = pd.read_csv('../csv/binance_ohlcv_1h.csv', parse_dates=['open_time'])
+# df.sort_values('open_time', inplace=True)
+
+
+connection = get_db_connection()
+query = f"""
+    SELECT * FROM binance_ohlcv_1h where hour(open_time) = 0
+"""
+
+df = pd.read_sql(query, connection)
+
+connection.close()    
+
+print(df)
 
 # Prophet 전처리 함수
 def get_coin_df_for_prophet(df, coin_dict):

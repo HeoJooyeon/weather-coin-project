@@ -17,8 +17,8 @@ def connect_mysql():
     return pymysql.connect(
         host="localhost",
         user="root",
-        password="981021",
-        db="news_info_db",
+        password="1111",
+        db="weathercoin",
         charset="utf8mb4"
     )       
     
@@ -62,9 +62,9 @@ def fetch_coin_to_mysql(query = "BTC"):
                             # print(title_without_tag)
                             # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
                             cur.execute(f"""
-                                INSERT INTO coin_news_sim(title, url, content, publish_time, created_at)
-                                VALUES(%s, %s, %s, %s, NOW())                        
-                            """, (title_without_tag, url_without_tag, content_without_tag, publish_time))
+                                INSERT INTO coin_news_sim(title, pair, symbol ,url, content, publish_time, created_at, updated_at ,deleted_at)
+                                VALUES(%s, %s,%s,%s, %s, %s, NOW(),NOW(),NOW())                        
+                            """, (title_without_tag,f"{coin}UDT",coin, url_without_tag, content_without_tag, publish_time))
                     else:
                         print("item이 없습니다")
                 else: 

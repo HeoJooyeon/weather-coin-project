@@ -1,1 +1,0 @@
-print('daily_job_test')
