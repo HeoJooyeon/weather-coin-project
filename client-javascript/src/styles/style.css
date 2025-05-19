@@ -1,4 +1,11 @@
-
+@font-face{
+  font-family: "retro";
+  src: url("./font/neodgm_code.ttf") format("ttf");
+  src: url("./font/NeoDunggeunmoPro-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 /* Reset & 기본 설정 */
 * {
   margin: 0;
@@ -7,7 +14,7 @@
 }
 
 body {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "retro", sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
@@ -32,29 +39,30 @@ a {
 
   /* 색상 변수 - 라이트 모드 기본값 */
   --primary-color: #3861fb; /* 기존 주 사용 파란색 */
-  --primary-hover-color: #2c4cc2; /* primary-color의 호버 시 어두운 버전 */
+  --primary-hover-color:  #2c4cc2; /* primary-color의 호버 시 어두운 버전 */
   --primary-focus-shadow-color: rgba(56, 97, 251, 0.15); /* 포커스 시 그림자 색상 */
   --accent-color: #03c75a; /* 네이버 그린 계열 또는 다른 강조색 */
   --profit-color: #4CAF50;
   --loss-color: #F44336;
 
-  --background-color: #f4f5f6;      /* 전체 페이지 배경 */
-  --card-bg-color: #ffffff;         /* 카드, 패널 등 콘텐츠 영역 배경 */
-  --input-bg-color: #ffffff;        /* 입력 필드 배경 */
-  --input-border-color: #dce0e2;    /* 입력 필드 테두리 */
-  --border-color: #e9edf3;          /* 일반적인 구분선, 테두리 */
-  --text-color: #333;               /* 기본 텍스트 */
-  --text-secondary-color: #555;     /* 보조 텍스트 (약간 연하게) */
-  --text-tertiary-color: #777;      /* 3차 텍스트 (더 연하게, placeholder 등) */
-  
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 일반 카드 그림자 */
-  --inner-card-shadow: 0 1px 3px rgba(0,0,0,0.05); /* 카드 내부 요소 그림자 */
-  
-  --disabled-bg-color: #e9ecef;     /* 비활성 요소 배경 */
-  --disabled-text-color: #6c757d;   /* 비활성 요소 텍스트 */
-  --error-bg-color: rgba(220, 53, 69, 0.1); /* 오류 메시지 배경 */
-  
-  --color-scheme: light; /* 기본 색상 스킴 */
+  --background-color: #b3dff2;      /* 전체 페이지 배경 - 진하고 선명한 하늘색 */
+  --card-bg-color: #e0f4ff;         /* 카드 배경 - 밝은 하늘색 배경 */
+  --input-bg-color: #d0ebff;        /* 입력 필드 배경 - 연하되 약간 진함 */
+  --input-border-color: #70bce0;    /* 입력 필드 테두리 - 중간톤 하늘색 */
+  --border-color: #a0d0e8;          /* 구분선 - 밝은 하늘색 */
+  --text-color: #1d2c3a;            /* 기본 텍스트 - 짙은 네이비 */
+  --text-secondary-color: #35566d;  /* 보조 텍스트 - 중간톤 네이비블루 */
+  --text-tertiary-color: #547a91;   /* 3차 텍스트 - 블루그레이 */
+
+  --card-shadow: 0 2px 8px rgba(0, 128, 255, 0.12); /* 카드 그림자 */
+  --inner-card-shadow: 0 1px 3px rgba(0,128,255,0.07); /* 내부 요소 그림자 */
+
+  --disabled-bg-color: #bcd6e6;     /* 비활성 요소 배경 */
+  --disabled-text-color: #6f8fa3;   /* 비활성 요소 텍스트 */
+  --error-bg-color: rgba(220, 53, 69, 0.1); /* 오류 메시지 배경은 동일 */
+
+ 
+ --color-scheme: light; /* 기본 색상 스킴 */
 }
 
 /* ========================================================================== */
@@ -266,6 +274,41 @@ body.dark-mode .form-group input[type="email"]:focus,
 body.dark-mode .form-group input[type="password"]:focus {
   border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-focus-shadow-color);
 }
+.email-domain-popup li:hover {
+  background-color: #f0f0f0;
+}
+
+.password-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.password-wrapper input {
+  display: block;
+  width: 100%;
+  padding-right: 2.5rem;
+  box-sizing: border-box;
+  
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body.dark-mode .caps-lock-warning { color: var(--loss-color); }
 body.dark-mode .remember-me { color: var(--text-secondary-color); }
 body.dark-mode .remember-me input[type="checkbox"] { accent-color: var(--primary-color); }
@@ -565,7 +608,7 @@ body.dark-mode #theme-toggle:hover {
 }
 
 .left-panel {
-  flex: 1;
+  flex: 1.5;
   background: var(--card-bg-color);
   border-radius: 12px;
   box-shadow: var(--card-shadow);
@@ -1083,7 +1126,8 @@ body.dark-mode .coin-detail-sticky-left-panel::-webkit-scrollbar-thumb { backgro
   color: var(--text-secondary-color);
 }
 .form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="text"] {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid var(--input-border-color);
@@ -1316,7 +1360,7 @@ body.dark-mode .coin-detail-sticky-left-panel::-webkit-scrollbar-thumb { backgro
   font-size: 0.95em;
   line-height: 1.6;
   margin-bottom: 15px;
-  max-width: 500px;
+  
 }
 .initial-info-container small {
   font-size: 0.8em;
@@ -2090,4 +2134,58 @@ body.dark-mode .write-form .form-buttons .cancel-button:hover {
   .post-detail-title { font-size: 1.6em; }
   .comments-section h3 { font-size: 1.2em; }
 }
+
+/* 스코어링 표 */
+.weather-legend {
+  padding: 6px 75px;           
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  background-color: #fdfdff;
+  max-width: 750px;            
+  margin: 16px auto;
+  font-size: 0.9rem;
+  color: var(--text-secondary-color);
+  box-shadow: var(--inner-card-shadow);
+}
+
+
+body.dark-mode .weather-legend {
+  background-color: #2c2f3c;           
+  border-color: var(--border-color);    
+  color: var(--text-secondary-color);   
+  box-shadow: var(--inner-card-shadow); 
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.logo-icon {
+  width: 30px;
+  height: 30px;
+  margin: 6px;
+  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.6));
+}
+
+
+
+/* 크롬, 사파리, 엣지에서 화살표 제거 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tab-button{
+  background-color: #3861fb;
+  padding: 6px 10px;
+  color: #ffff;
+  
+  border-radius: 0.7rem;
+}
+
 

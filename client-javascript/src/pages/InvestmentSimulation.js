@@ -5,9 +5,16 @@
 // 해당 모듈에서 import하여 사용하는 것이 좋습니다.
 const fetchCoinList = async () => {
   return new Promise(resolve => setTimeout(() => resolve([
-    { id: 'bitcoin', name: 'Bitcoin (BTC)', symbol: 'BTC' },
-    { id: 'ethereum', name: 'Ethereum (ETH)', symbol: 'ETH' },
-    { id: 'dogecoin', name: 'Dogecoin (DOGE)', symbol: 'DOGE' },
+    { id: 'Bitcoin', name: 'Bitcoin (BTC)', pair: 'BTCUSDT' },
+    { id: 'Ethereum', name: 'Ethereum (ETH)', pair: 'ETHUSDT' },
+    { id: 'Dogecoin', name: 'Dogecoin (DOGE)', pair: 'DOGEUSDT' },
+    { id: 'Ripple', name: 'Ripple (XRP)', pair: 'XRPUSDT' },
+    { id: 'Binance Coin', name: 'Binance Coin (BNB)', pair: 'BNBUSDT' },
+    { id: 'Solana', name: 'Solana (SOL)', pair: 'SOLUSDT' },
+    { id: 'Cardano', name: 'Cardano (ADA)', pair: 'ADAUSDT' },
+    { id: 'TRON', name: 'TRON (TRX)', pair: 'TRXUSDT' },
+    { id: 'Shiba Inu', name: 'Shiba Inu(SHIB)', pair: 'SHIBUSDT' },
+    { id: 'Litecoin', name: 'Litecoin (LTC)', pair: 'LTCUSDT' }
   ]), 500));
 };
 
@@ -34,7 +41,7 @@ let appState = {
   error: '',
 };
 
-// --- DOM 요소 참조 변수 ---
+// --- DOM 요소 참조 변수 ---0
 let pageElements = {
   container: null,
   coinSelect: null,
@@ -69,11 +76,25 @@ function createPageLayout(appContainer) {
 
   // 헤더 생성
   const headerEl = document.createElement('header');
-  headerEl.className = 'page-header';
-  headerEl.innerHTML = `
-    <h2>수익률 예측 시뮬레이션</h2>
-    <p>과거 데이터를 기반으로 미래 투자 수익률을 예측해 보세요.</p>
-  `;
+headerEl.className = 'page-header';
+
+// h2와 p를 각각 따로 생성
+const h2 = document.createElement('h2');
+h2.textContent = '수익률 예측 시뮬레이션🔄';
+h2.style.cursor = 'pointer'; // 클릭 가능하게 스타일 적용
+h2.addEventListener('click', () => {
+  // 결과 초기화
+  appState.simulationResult = null;
+  appState.error = '';
+  updateResultsArea(); // 결과 영역 비우기
+  updateErrorMessage(); // 오류 메시지도 숨기기
+});
+
+const p = document.createElement('p');
+p.textContent = '과거 데이터를 기반으로 미래 투자 수익률을 예측해 보세요.';
+
+headerEl.appendChild(h2);
+headerEl.appendChild(p);
   pageElements.container.appendChild(headerEl);
 
   // 입력 폼 생성
@@ -118,42 +139,156 @@ function createFormElement() {
   formGrid.appendChild(coinGroup);
 
   // 투자 금액
-  const amountGroup = document.createElement('div');
-  amountGroup.className = 'form-group';
-  const amountLabel = document.createElement('label');
-  amountLabel.htmlFor = 'investment-amount';
-  amountLabel.textContent = '투자 금액 ($):';
-  pageElements.amountInput = document.createElement('input');
-  pageElements.amountInput.type = 'number';
-  pageElements.amountInput.id = 'investment-amount';
-  pageElements.amountInput.placeholder = '예: 1000';
-  pageElements.amountInput.min = '1';
-  pageElements.amountInput.addEventListener('input', (e) => { // 'change' 대신 'input'으로 더 즉각적인 반응
-    appState.investmentAmount = parseFloat(e.target.value) || 0;
-  });
-  amountGroup.appendChild(amountLabel);
-  amountGroup.appendChild(pageElements.amountInput);
-  formGrid.appendChild(amountGroup);
+const amountGroup = document.createElement('div');
+amountGroup.className = 'form-group';
 
-  // 투자 기간
-  const periodGroup = document.createElement('div');
-  periodGroup.className = 'form-group';
-  const periodLabel = document.createElement('label');
-  periodLabel.htmlFor = 'investment-period';
-  periodLabel.textContent = '투자 기간 (일):';
-  pageElements.periodInput = document.createElement('input');
-  pageElements.periodInput.type = 'number';
-  pageElements.periodInput.id = 'investment-period';
-  pageElements.periodInput.placeholder = '예: 30';
-  pageElements.periodInput.min = '1';
-  pageElements.periodInput.addEventListener('input', (e) => { // 'change' 대신 'input'
-    appState.investmentPeriod = parseInt(e.target.value, 10) || 0;
-  });
-  periodGroup.appendChild(periodLabel);
-  periodGroup.appendChild(pageElements.periodInput);
-  formGrid.appendChild(periodGroup);
+const amountLabel = document.createElement('label');
+amountLabel.htmlFor = 'investment-amount';
+amountLabel.textContent = '투자 금액 (₩):';
 
-  formContainer.appendChild(formGrid);
+pageElements.amountInput = document.createElement('input');
+pageElements.amountInput.type = 'number';
+pageElements.amountInput.id = 'investment-amount';
+pageElements.amountInput.placeholder = '일천원에서 일억원 사이 입력';  // 문구 변경
+pageElements.amountInput.min = '1000';
+pageElements.amountInput.max = '100000000';
+//pageElements.amountInput.step = '1000';
+
+// 검증
+pageElements.amountInput.addEventListener('input', (e) => {
+  const raw = e.target.value;
+
+  // 입력이 빈칸일 경우: 상태 초기화
+  if (raw.trim() === '') {
+    appState.investmentAmount = 0;
+    return;
+  }
+
+  // 숫자가 아니면 무시
+  if (!/^\d+$/.test(raw)) return;
+
+  const value = parseInt(raw, 10);
+  appState.investmentAmount = value;
+});
+
+// 포커스 아웃될 때 값 보정
+pageElements.amountInput.addEventListener('blur', (e) => {
+  let value = parseInt(e.target.value, 10);
+
+  // 최소값 보정
+  if (value < 1000) value = 1000;
+
+  // 최대값 보정
+  if (value > 100000000) value = 100000000;
+
+  // 1000원 단위 반올림
+  if (value % 1000 !== 0) value = Math.round(value / 1000) * 1000;
+
+  // 보정된 값을 input에 다시 반영
+  e.target.value = value;
+
+  // 상태 반영
+  appState.investmentAmount = value;
+});
+
+
+
+
+amountGroup.appendChild(amountLabel);
+amountGroup.appendChild(pageElements.amountInput);
+formGrid.appendChild(amountGroup);
+
+
+// 투자 기간 (과거 / 미래 선택형)
+const periodGroup = document.createElement('div');
+periodGroup.className = 'form-group';
+
+// 라벨
+const periodLabel = document.createElement('label');
+periodLabel.textContent = '투자 기간 선택:';
+periodGroup.appendChild(periodLabel);
+
+// 탭 버튼 컨테이너
+const tabContainer = document.createElement('div');
+tabContainer.style.display = 'flex';
+tabContainer.style.gap = '8px';
+tabContainer.style.marginBottom = '10px';
+
+// 과거 버튼
+const pastButton = document.createElement('button');
+pastButton.textContent = '과거';
+pastButton.className = "timeBtn"
+pastButton.type = 'button';
+pastButton.className = 'tab-button selected'; // 선택 상태
+tabContainer.appendChild(pastButton);
+formContainer.appendChild(tabContainer);
+
+// 미래 버튼
+const futureButton = document.createElement('button');
+futureButton.textContent = '미래';
+futureButton.className = "timeBtn"
+futureButton.type = 'button';
+futureButton.className = 'tab-button';
+tabContainer.appendChild(futureButton);
+
+// 옵션 선택 
+const periodSelect = document.createElement('select');
+periodSelect.id = 'investment-period-select';
+periodSelect.className = 'form-control';
+formContainer.appendChild(tabContainer);
+periodGroup.appendChild(periodSelect);
+
+// 드롭다운 옵션 데이터
+const options = {
+  past: [
+    { label: '1년 전', value: -365 },
+    { label: '2년 전', value: -730 },
+    { label: '3년 전', value: -1095 }
+  ],
+  future: [
+    { label: '7일 후', value: 7 },
+    { label: '15일 후', value: 15 },
+    { label: '30일 후', value: 30 }
+  ]
+};
+
+// 옵션 로딩 함수
+function loadPeriodOptions(type) {
+  periodSelect.innerHTML = ''; // 기존 옵션 제거
+  options[type].forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt.value;
+    option.textContent = opt.label;
+    periodSelect.appendChild(option);
+  });
+  appState.investmentPeriod = parseInt(periodSelect.value, 10);
+}
+
+// 이벤트 연결
+periodSelect.addEventListener('change', (e) => {
+  appState.investmentPeriod = parseInt(e.target.value, 10);
+});
+
+pastButton.addEventListener('click', () => {
+  pastButton.classList.add('selected');
+  futureButton.classList.remove('selected');
+  loadPeriodOptions('past');
+});
+
+futureButton.addEventListener('click', () => {
+  futureButton.classList.add('selected');
+  pastButton.classList.remove('selected');
+  loadPeriodOptions('future');
+});
+
+// 기본값: 과거
+loadPeriodOptions('past');
+
+// 추가 구성요소 연결
+formGrid.appendChild(periodGroup);
+formContainer.appendChild(formGrid);
+
+
 
   // 예측 버튼
   pageElements.simulateButton = document.createElement('button');
@@ -171,7 +306,7 @@ function populateCoinSelect() {
   appState.coins.forEach(coin => {
     const option = document.createElement('option');
     option.value = coin.id; // API 응답의 id 사용
-    option.textContent = `${coin.name} (${coin.symbol})`;
+    option.textContent = `${coin.name} (${coin.pair})`;
     if (coin.id === appState.selectedCoinId) {
       option.selected = true;
     }
