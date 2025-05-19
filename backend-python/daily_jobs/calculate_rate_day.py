@@ -32,7 +32,7 @@ def load_coin_data():
 # 기술 지표 예측
  
 def calcurate_indicators(df):
-    coins = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "ADAUSDT", "TRXUSDT", "SHIBUSDT", "LTCUSDT"]
+    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
     coin_results = []
     for coin in coins:        
         coin_df = df[df["pair"] == coin].sort_values("open_time")
