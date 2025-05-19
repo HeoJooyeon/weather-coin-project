@@ -2180,12 +2180,22 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.tab-button{
+.timeBtn {
   background-color: #3861fb;
   padding: 6px 10px;
-  color: #ffff;
-  
+  color: #fff;
+  border: none;
   border-radius: 0.7rem;
+  cursor: pointer;
+
+  /* 부드러운 확대 효과 */
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
+
+.timeBtn:hover {
+  background-color: #2c4cc2;
+  transform: scale(1.05);  /* 호버 시 약간 확대 */
+}
+
 
 

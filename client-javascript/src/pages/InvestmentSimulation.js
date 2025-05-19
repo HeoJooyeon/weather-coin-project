@@ -152,7 +152,7 @@ pageElements.amountInput.id = 'investment-amount';
 pageElements.amountInput.placeholder = '일천원에서 일억원 사이 입력';  // 문구 변경
 pageElements.amountInput.min = '1000';
 pageElements.amountInput.max = '100000000';
-//pageElements.amountInput.step = '1000';
+
 
 // 검증
 pageElements.amountInput.addEventListener('input', (e) => {
@@ -166,7 +166,6 @@ pageElements.amountInput.addEventListener('input', (e) => {
 
   // 숫자가 아니면 무시
   if (!/^\d+$/.test(raw)) return;
-
   const value = parseInt(raw, 10);
   appState.investmentAmount = value;
 });
@@ -191,9 +190,6 @@ pageElements.amountInput.addEventListener('blur', (e) => {
   appState.investmentAmount = value;
 });
 
-
-
-
 amountGroup.appendChild(amountLabel);
 amountGroup.appendChild(pageElements.amountInput);
 formGrid.appendChild(amountGroup);
@@ -217,18 +213,17 @@ tabContainer.style.marginBottom = '10px';
 // 과거 버튼
 const pastButton = document.createElement('button');
 pastButton.textContent = '과거';
-pastButton.className = "timeBtn"
+pastButton.className = 'timeBtn selected'; // 선택 상태
 pastButton.type = 'button';
-pastButton.className = 'tab-button selected'; // 선택 상태
+
 tabContainer.appendChild(pastButton);
 formContainer.appendChild(tabContainer);
 
 // 미래 버튼
 const futureButton = document.createElement('button');
 futureButton.textContent = '미래';
-futureButton.className = "timeBtn"
+futureButton.className = 'timeBtn'
 futureButton.type = 'button';
-futureButton.className = 'tab-button';
 tabContainer.appendChild(futureButton);
 
 // 옵션 선택 
