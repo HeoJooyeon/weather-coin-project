@@ -35,7 +35,7 @@ def fetch_coin_info():
     
 def calculate_change_rate(df_day):    
     
-    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    coins = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "ADAUSDT", "TRXUSDT", "SHIBUSDT", "LTCUSDT"]
     date_change = []
     for coin in coins:
         
