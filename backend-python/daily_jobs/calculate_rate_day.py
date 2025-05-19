@@ -144,7 +144,7 @@ def input_coin_indicator(coin_scores):
                         %s, %s, %s,%s,%s, NOW(), NOW(), NOW()
                     )
                 """, (
-                    row["pair"], row["open_time"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0),row.get("score"),row.get("score_text")
+                    row["pair"] + "USDT", row["open_time"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0),row.get("score"),row.get("score_text")
                 ))
                 
             connection.commit()

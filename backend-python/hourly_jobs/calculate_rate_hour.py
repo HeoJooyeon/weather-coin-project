@@ -76,7 +76,7 @@ def input_coin_indicator(coin_indicators):
                         %s, %s, %s, NOW(), NOW(), NOW()
                     )
                 """, (
-                    row["pair"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0)
+                    row["pair"] + "USDT", row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0)
                 ))
                 
             connection.commit()

@@ -59,7 +59,7 @@ def fetch_coin_to_mysql(query = "BTC"):
                             cur.execute(f"""
                                 INSERT INTO coin_news(title, pair, symbol ,url, content, publish_time, created_at, updated_at ,deleted_at)
                                 VALUES(%s, %s,%s,%s, %s, %s, NOW(),NOW(),NOW())                        
-                            """, (title_without_tag,f"{coin}UDT",coin, url_without_tag, content_without_tag, publish_time))
+                            """, (title_without_tag,f"{coin}USDT",coin, url_without_tag, content_without_tag, publish_time))
                     else:
                         print("item이 없습니다")
                 else: 
