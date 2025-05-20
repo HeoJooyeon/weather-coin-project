@@ -1,6 +1,10 @@
 // client-javascript/src/pages/CoinDetail.js
 // API 호출 관련 import는 유지 (conapi.js)
 import {
+  fetchBtcChartDataFromDB,
+  fetchIndicatorData,
+  fetchGoldPriceData,
+  fetchExchangeRateData,
   fetchCoinsFromServerAPI,
   fetchCoinUIData,
   formatScoreBasedWeatherData,
@@ -19,6 +23,7 @@ import {
 import {
   createBtcPriceChart,
   createSimpleLineChart,
+  createIndicatorChart,
   createMaChart,
 } from "./_ChartHelpers.js";
 
@@ -43,7 +48,7 @@ function destroyAllActiveCharts() {
 // renderCoinDetailPage 함수는 paste-3.txt의 내용 중 차트 생성 부분을 수정
 export async function renderCoinDetailPage(
   container,
-  coinSymbolFromUrl = "BTC",
+  coinSymbolFromUrl = "BTC"
 ) {
   destroyAllActiveCharts();
   container.innerHTML = ""; // 이전 내용 삭제
@@ -54,25 +59,102 @@ export async function renderCoinDetailPage(
   // 실제 프로젝트에서는 이부분을 fetchCoinsFromServerAPI() 등으로 대체해야 합니다.
   const TEMP_COIN_LIST_FOR_DEMO = [
     {
-      symbol: "BTC",
+      rank: 1,
       name: "Bitcoin",
-      graphicSymbol: "₿",
-      price: "₩90,000,000",
-      pair: "BTCUSDT",
+      symbol: "BTC",
+      graphicSymbol: "₿", // 비트코인 그래픽 심볼
+      apiSymbol: "BTCUSDT",
+      price: "$67,890.45",
+      change: "+2.34%",
     },
     {
-      symbol: "ETH",
+      rank: 2,
       name: "Ethereum",
-      graphicSymbol: "Ξ",
-      price: "₩4,500,000",
-      pair: "ETHUSDT",
+      symbol: "ETH",
+      graphicSymbol: "Ξ", // 이더리움 그래픽 심볼
+      apiSymbol: "ETHUSDT",
+      price: "$3,456.78",
+      change: "+1.23%",
+    },
+    {
+      rank: 3,
+      name: "Ripple",
+      symbol: "XRP",
+      graphicSymbol: "✕", // 리플 그래픽 심볼 (일반적으로 사용되는 X)
+      apiSymbol: "XRPUSDT",
+      price: "$1.23",
+      change: "-0.45%",
+    },
+    {
+      rank: 4,
+      name: "Binance Coin",
+      symbol: "BNB",
+      graphicSymbol: "BNB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+      apiSymbol: "BNBUSDT",
+      price: "$456.78",
+      change: "+0.89%",
+    },
+    {
+      rank: 5,
+      name: "Solana",
+      symbol: "SOL",
+      graphicSymbol: "SOL", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+      apiSymbol: "SOLUSDT",
+      price: "$123.45",
+      change: "+5.67%",
+    },
+    {
+      rank: 6,
+      name: "Dogecoin",
+      symbol: "DOGE",
+      graphicSymbol: "Ɖ", // 도지코인 그래픽 심볼
+      apiSymbol: "DOGEUSDT",
+      price: "$0.123",
+      change: "-1.23%",
+    },
+    {
+      rank: 7,
+      name: "Cardano",
+      symbol: "ADA",
+      graphicSymbol: "₳", // 카르다노 그래픽 심볼
+      apiSymbol: "ADAUSDT",
+      price: "$0.456",
+      change: "+0.78%",
+    },
+    {
+      rank: 8,
+      name: "TRON",
+      symbol: "TRX",
+      graphicSymbol: "TRX", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+      apiSymbol: "TRXUSDT",
+      price: "$0.089",
+      change: "-0.34%",
+    },
+    {
+      rank: 9,
+      name: "Shiba Inu",
+      symbol: "SHIB",
+      graphicSymbol: "SHIB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+      apiSymbol: "SHIBUSDT",
+      price: "$0.00002345",
+      change: "+3.45%",
+    },
+    {
+      rank: 10,
+      name: "Litecoin",
+      symbol: "LTC",
+      graphicSymbol: "Ł", // 라이트코인 그래픽 심볼
+      apiSymbol: "LTCUSDT",
+      price: "$78.90",
+      change: "-0.67%",
     },
     // ... 기타 코인들
   ];
   const coin =
     TEMP_COIN_LIST_FOR_DEMO.find((c) => c.symbol === coinSymbolFromUrl) ||
     TEMP_COIN_LIST_FOR_DEMO[0];
-  const currentPairForChart = coin.pair || `${coin.symbol}USDT`; // 차트용 pair
+  // const currentPairForChart = coin.pair || `${coin.symbol}USDT`; // 차트용 pair
+  const currentPairForChart = `${coinSymbolFromUrl}USDT`; // 차트용 pair
 
   const pageWrapper = document.createElement("div");
   pageWrapper.className = "coin-detail-page-wrapper";
@@ -96,7 +178,10 @@ export async function renderCoinDetailPage(
   const priceValue = uiData ? uiData.current_price : undefined;
   const priceText =
     priceValue !== undefined
-      ? `$${parseFloat(priceValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`
+      ? `$${parseFloat(priceValue).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 8,
+        })}`
       : coin.price || "가격 정보 로딩 중..."; // coin.price는 임시 fallback
   price.textContent = `현재가: ${priceText}`;
 
@@ -201,37 +286,56 @@ export async function renderCoinDetailPage(
   // 1. 첫 번째 컬럼: 코인 가격 차트 (MA 포함)
   const coinChartColumn = document.createElement("div");
   coinChartColumn.className = "coin-chart-column";
+  coinChartColumn.style.display = "flex";
+  coinChartColumn.style.flexDirection = "column";
+  coinChartColumn.style.gap = "25px"; // ✅ 여기서 전체 차트 간 간격 벌리기
 
   const priceAndIndicatorCombinedChartArea = document.createElement("div");
+  priceAndIndicatorCombinedChartArea.style.display = "flex";
+  priceAndIndicatorCombinedChartArea.style.flexDirection = "column";
+  priceAndIndicatorCombinedChartArea.style.height = "400px";
   priceAndIndicatorCombinedChartArea.className = "combined-chart-area-moved"; // CSS 클래스
+  priceAndIndicatorCombinedChartArea.style.gap = "100px"; // gap 제거
+
+  const priceAndIndicatorCombinedChartArea2 = document.createElement("div");
+  priceAndIndicatorCombinedChartArea2.style.display = "flex";
+  priceAndIndicatorCombinedChartArea2.style.flexDirection = "column";
+  priceAndIndicatorCombinedChartArea2.style.height = "400px";
+  priceAndIndicatorCombinedChartArea2.className = "combined-chart-area-moved"; // CSS 클래스
 
   const priceChartContainer = document.createElement("div");
   priceChartContainer.className = "price-chart-container";
+  priceChartContainer.style.height = "100px"; // 여기서 크기 조절
+  priceChartContainer.style.overflow = "hidden";
+
   const priceChartHeaderEl = document.createElement("div");
   priceChartHeaderEl.className = "chart-header";
   priceChartHeaderEl.innerHTML = `<h3><span class="coin-graphic-symbol-detail">${displaySymbol}</span> ${coin.name} 가격 변동 (라인)</h3>`; // 차트 타입 명시
   const priceChartOptions = document.createElement("div");
   priceChartOptions.className = "chart-options";
   // 캔들/라인 및 기간 버튼 (현재는 기능적으로 연결되지 않음, UI만 표시)
-  ["캔들", "라인"].forEach((type) => {
-    const option = document.createElement("button");
-    option.className =
-      type === "라인" ? "chart-option selected" : "chart-option";
-    option.textContent = type;
-    priceChartOptions.appendChild(option);
-  });
-  ["1일", "1주", "1개월", "1년", "전체"].forEach((time) => {
-    const option = document.createElement("button");
-    option.className =
-      time === "1개월" ? "time-option selected" : "time-option"; // 기본 선택
-    option.textContent = time;
-    priceChartOptions.appendChild(option);
-  });
-
+  // ["캔들", "라인"].forEach((type) => {
+  //   const option = document.createElement("button");
+  //   option.className =
+  //     type === "라인" ? "chart-option selected" : "chart-option";
+  //   option.textContent = type;
+  //   priceChartOptions.appendChild(option);
+  // });
+  // ["1일", "1주", "1개월", "1년", "전체"].forEach((time) => {
+  //   const option = document.createElement("button");
+  //   option.className =
+  //     time === "1개월" ? "time-option selected" : "time-option"; // 기본 선택
+  //   option.textContent = time;
+  //   priceChartOptions.appendChild(option);
+  // });
   const priceCanvasWrapper = document.createElement("div");
   priceCanvasWrapper.className = "canvas-wrapper";
+  priceCanvasWrapper.style.height = "100%"; // 내부 wrapper도 꽉 차게
   const priceChartCanvas = document.createElement("canvas");
   priceChartCanvas.id = "btcPriceChartCanvas"; // 이 ID로 createBtcPriceChart 호출
+  priceChartCanvas.style.height = "100%"; // canvas 자체도 100% 높이
+  priceChartCanvas.style.maxHeight = "300px"; // ✅ 강제 제한
+
   priceCanvasWrapper.appendChild(priceChartCanvas);
   priceChartContainer.appendChild(priceChartHeaderEl);
   priceChartContainer.appendChild(priceChartOptions);
@@ -242,62 +346,67 @@ export async function renderCoinDetailPage(
   indicatorChartContainer.className = "indicator-chart-container";
   const indicatorChartHeaderEl = document.createElement("h4");
   indicatorChartHeaderEl.textContent = "기술 지표";
-  const indicatorsTabs = document.createElement("div");
-  indicatorsTabs.className = "indicators-tabs";
-  const indicatorTypes = ["MA", "EMA", "RSI", "MACD"]; // EMA 등은 현재 미구현
-  indicatorTypes.forEach((indType) => {
-    const tab = document.createElement("button");
-    tab.className =
-      indType === "MA" ? "indicator-tab selected" : "indicator-tab";
-    tab.textContent = indType;
-    tab.addEventListener("click", () => {
-      indicatorsTabs
-        .querySelectorAll(".indicator-tab")
-        .forEach((t) => t.classList.remove("selected"));
-      tab.classList.add("selected");
+  // const indicatorsTabs = document.createElement("div");
+  // indicatorsTabs.className = "indicators-tabs";
+  // const indicatorTypes = ["MA", "EMA", "RSI", "MACD"]; // EMA 등은 현재 미구현
+  // indicatorTypes.forEach((indType) => {
+  //   const tab = document.createElement("button");
+  //   tab.className =
+  //     indType === "MA" ? "indicator-tab selected" : "indicator-tab";
+  //   tab.textContent = indType;
+  //   tab.addEventListener("click", () => {
+  //     indicatorsTabs
+  //       .querySelectorAll(".indicator-tab")
+  //       .forEach((t) => t.classList.remove("selected"));
+  //     tab.classList.add("selected");
 
-      if (
-        activeChartObjects["indicatorChartCanvas"] &&
-        typeof activeChartObjects["indicatorChartCanvas"].destroy === "function"
-      ) {
-        activeChartObjects["indicatorChartCanvas"].destroy();
-        delete activeChartObjects["indicatorChartCanvas"];
-      }
-
-      const btcPriceChart = activeChartObjects["btcPriceChartCanvas"];
-      if (
-        indType === "MA" &&
-        btcPriceChart &&
-        btcPriceChart._fullCandlestickDataForMA
-      ) {
-        const btcOhlcDataForMA = btcPriceChart._fullCandlestickDataForMA;
-        // createMaChart 호출 (basePriceData는 btcPriceChart에서 가져옴)
-        activeChartObjects["indicatorChartCanvas"] = createMaChart(
-          "indicatorChartCanvas",
-          btcOhlcDataForMA,
-          10,
-        );
-      } else {
-        console.warn(
-          `${indType} chart selected, but not implemented yet, or base data for MA is missing.`,
-        );
-        // 다른 지표 차트 로직 (현재는 MA만 구현됨)
-      }
-    });
-    indicatorsTabs.appendChild(tab);
-  });
+  //     if (
+  //       activeChartObjects["indicatorChartCanvas"] &&
+  //       typeof activeChartObjects["indicatorChartCanvas"].destroy === "function"
+  //     ) {
+  //       activeChartObjects["indicatorChartCanvas"].destroy();
+  //       delete activeChartObjects["indicatorChartCanvas"];
+  //     }
+  //   });
+  //   indicatorsTabs.appendChild(tab);
+  // });
   const indicatorCanvasWrapper = document.createElement("div");
   indicatorCanvasWrapper.className = "canvas-wrapper";
   const indicatorChartCanvas = document.createElement("canvas");
   indicatorChartCanvas.id = "indicatorChartCanvas"; // 이 ID로 createMaChart 호출
   indicatorCanvasWrapper.appendChild(indicatorChartCanvas);
   indicatorChartContainer.appendChild(indicatorChartHeaderEl);
-  indicatorChartContainer.appendChild(indicatorsTabs);
+  // indicatorChartContainer.appendChild(indicatorsTabs);
   indicatorChartContainer.appendChild(indicatorCanvasWrapper);
 
+  // 가격 차트만 담는 영역
+  const priceChartArea = document.createElement("div");
+  priceChartArea.className = "price-chart-area-separated";
+  priceChartArea.style.border = "none";
+  priceChartArea.style.marginBottom = "20px"; // 아래쪽 간격만 살림
+  priceChartArea.appendChild(priceChartContainer);
+
+  // 기술 지표 차트만 담는 영역
+  const indicatorChartArea = document.createElement("div");
+  indicatorChartArea.className = "indicator-chart-area-separated";
+  indicatorChartArea.style.border = "none";
+  indicatorChartArea.style.marginTop = "0px";
+  indicatorChartArea.appendChild(indicatorChartContainer);
+
+  // // 각각 별도로 coinChartColumn에 추가
+  // coinChartColumn.appendChild(priceChartArea);
+  // coinChartColumn.appendChild(indicatorChartArea);
+
   priceAndIndicatorCombinedChartArea.appendChild(priceChartContainer);
-  priceAndIndicatorCombinedChartArea.appendChild(indicatorChartContainer);
+  priceAndIndicatorCombinedChartArea.style.display = "flex";
+  priceAndIndicatorCombinedChartArea.style.flexDirection = "column";
   coinChartColumn.appendChild(priceAndIndicatorCombinedChartArea);
+
+  priceAndIndicatorCombinedChartArea2.appendChild(indicatorChartContainer);
+  priceAndIndicatorCombinedChartArea2.style.display = "flex";
+  priceAndIndicatorCombinedChartArea2.style.flexDirection = "column";
+  coinChartColumn.appendChild(priceAndIndicatorCombinedChartArea2);
+
   rightContentArea.appendChild(coinChartColumn);
 
   // 2. 두 번째 컬럼: 환율 및 금 시세 차트
@@ -342,7 +451,7 @@ export async function renderCoinDetailPage(
   // 뉴스 및 게시글은 실제 API 연동 필요
   const newsListContainer = await createNewsColumnFromAPI(
     coin.symbol,
-    currentPairForChart,
+    currentPairForChart
   );
   const postsListContainer = await createPostsColumnFromAPI(coin.symbol); // coinSymbol 전달
   newsAndPostsStack.appendChild(newsListContainer);
@@ -354,40 +463,89 @@ export async function renderCoinDetailPage(
   container.appendChild(pageWrapper);
 
   // --- 차트 렌더링 호출 ---
-  requestAnimationFrame(() => {
+  requestAnimationFrame(async () => {
+    const target = document.querySelector(
+      ".combined-chart-area-moved .indicator-chart-container"
+    );
+    if (target) {
+      target.style.borderTop = "none";
+      target.style.marginTop = "0px";
+      target.style.paddingTop = "0px";
+    }
     // DOM이 완전히 그려진 후 차트 생성
     try {
       // BTC 가격 차트 (라인) 생성
-      const btcChart = createBtcPriceChart("btcPriceChartCanvas");
+      const ohlcvData = await fetchBtcChartDataFromDB(currentPairForChart);
+      const btcChart = createBtcPriceChart("btcPriceChartCanvas", ohlcvData);
       if (btcChart) {
         activeChartObjects["btcPriceChartCanvas"] = btcChart;
-        // BTC 차트 데이터 기반으로 MA 차트 생성 (초기 MA 탭 선택 시)
-        if (btcChart._fullCandlestickDataForMA) {
-          activeChartObjects["indicatorChartCanvas"] = createMaChart(
+        // MA → 실제 API 데이터 기반으로 대체
+
+        const indicatorData = await fetchIndicatorData(currentPairForChart);
+        // console.log("[DEBUG] indicatorData = ", indicatorData);
+
+        if (indicatorData && indicatorData.length > 0) {
+          activeChartObjects["indicatorChartCanvas"] = createIndicatorChart(
             "indicatorChartCanvas",
-            btcChart._fullCandlestickDataForMA,
-            10,
+            indicatorData
           );
         } else {
-          console.warn(
-            "[CoinDetail] Could not retrieve full OHLC data from BTC price chart for MA calculation.",
-          );
+          console.warn("No indicator data available for chart.");
         }
       }
 
       // USD/KRW 및 금 시세 차트 생성
-      activeChartObjects["usdKrwChartCanvas"] = createSimpleLineChart(
-        "usdKrwChartCanvas",
-        "USD/KRW",
-        1200,
-        1400,
-      );
-      activeChartObjects["goldPriceChartCanvas"] = createSimpleLineChart(
-        "goldPriceChartCanvas",
-        "Gold Price (USD)",
-        1800,
-        2500,
-      );
+      const usdKrwData = await fetchExchangeRateData();
+      if (usdKrwData && usdKrwData.length > 0) {
+        const parsedUsdKrwData = usdKrwData
+          .map((item) => ({
+            x: new Date(item.rate_date), // 날짜
+            y: parseFloat(item.rate), // 환율값 (예: 1333.20)
+          }))
+          .reverse(); // 최신 → 과거 순서일 경우, 뒤집기
+
+        activeChartObjects["usdKrwChartCanvas"] = createSimpleLineChart(
+          "usdKrwChartCanvas",
+          "USD/KRW",
+          parsedUsdKrwData,
+          "steelblue"
+        );
+      } else {
+        console.warn("환율 데이터가 없습니다.");
+      }
+
+      // activeChartObjects["usdKrwChartCanvas"] = createSimpleLineChart(
+      //   "usdKrwChartCanvas",
+      //   "USD/KRW",
+      //   1200,
+      //   1400
+      // );
+
+      const goldData = await fetchGoldPriceData();
+
+      if (goldData && goldData.length > 0) {
+        const parsedGoldData = goldData
+          .map((item) => ({
+            x: new Date(item.base_date), // 날짜 (시간 포함된 ISO 문자열)
+            y: parseFloat(item.price_per_kilogram), // 금 1kg당 가격
+          }))
+          .reverse(); // ← 날짜 오름차순 정렬 (과거→현재)
+
+        activeChartObjects["goldPriceChartCanvas"] = createSimpleLineChart(
+          "goldPriceChartCanvas",
+          "Gold Price per Kg (KRW)",
+          parsedGoldData,
+          "goldenrod"
+        );
+      } else {
+        console.warn("금 시세 데이터가 없습니다.");
+      }
+      // activeChartObjects["goldPriceChartCanvas"] = createSimpleLineChart(
+      //   "goldPriceChartCanvas",
+      //   "Gold Price (USD)",
+      //   1800,
+      //   2500
+      // );
     } catch (e) {
       console.error("Error rendering charts in CoinDetail.js:", e);
     }
@@ -427,7 +585,10 @@ async function createNewsColumnFromAPI(coinSymbol, coinPair) {
         titleDiv.appendChild(newsLink);
         const timeDiv = document.createElement("div");
         timeDiv.className = "news-time";
-        timeDiv.textContent = `(${formatApiTimestamp(item.publishtime || item.publish_time, false)})`;
+        timeDiv.textContent = `(${formatApiTimestamp(
+          item.publishtime || item.publish_time,
+          false
+        )})`;
         newsItemLi.appendChild(titleDiv);
         newsItemLi.appendChild(timeDiv);
         newsListEl.appendChild(newsItemLi);
@@ -479,7 +640,9 @@ async function createPostsColumnFromAPI(currentCoinSymbol) {
         titleDiv.textContent = item.title;
         const timeDiv = document.createElement("div");
         timeDiv.className = "post-time";
-        timeDiv.textContent = `(조회수: ${item.viewcount || 0} / ${formatApiTimestamp(item.createdat, false)})`;
+        timeDiv.textContent = `(조회수: ${
+          item.viewcount || 0
+        } / ${formatApiTimestamp(item.createdat, false)})`;
         postItemLi.appendChild(titleDiv);
         postItemLi.appendChild(timeDiv);
         postsListEl.appendChild(postItemLi);

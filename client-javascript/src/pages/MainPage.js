@@ -31,7 +31,7 @@ function createCoinPriceHistorySVG(containerId, priceHistoryData, coinSymbol) {
     message.style.color = "var(--text-secondary)";
     container.appendChild(message);
     console.log(
-      `[SVGChart] Not enough data to display chart for ${coinSymbol}`,
+      `[SVGChart] Not enough data to display chart for ${coinSymbol}`
     );
     return;
   }
@@ -104,7 +104,7 @@ async function updateHoverSVGChart(pair, symbol) {
   } catch (error) {
     console.error(
       `[SVGChart] Error fetching or creating SVG chart for ${symbol}:`,
-      error,
+      error
     );
     if (svgContainer) {
       svgContainer.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-secondary);">차트 로딩 오류 (${symbol})</p>`;
@@ -186,7 +186,7 @@ export async function renderMainPage(container) {
       fearGreedValueSmall.className = "fear-greed-value-small";
       const fearGreedStatusTextSmall = document.createElement("div");
       fearGreedStatusTextSmall.textContent = getFearGreedLabelFromAPI(
-        fearGreedClassification,
+        fearGreedClassification
       );
       fearGreedStatusTextSmall.className = "fear-greed-status-small";
       fgValueAndStatusContainer.appendChild(fearGreedValueSmall);
@@ -201,7 +201,7 @@ export async function renderMainPage(container) {
       const emojiDisplay = document.createElement("div");
       emojiDisplay.className = "fear-greed-emoji-display";
       emojiDisplay.textContent = getFearGreedEmojiFromAPI(
-        fearGreedClassification,
+        fearGreedClassification
       );
       const fearGreedValueDisplay = document.createElement("div");
       fearGreedValueDisplay.className = "fear-greed-value-display";
@@ -209,7 +209,7 @@ export async function renderMainPage(container) {
       const statusDisplayText = document.createElement("div");
       statusDisplayText.className = "fear-greed-status-display-text";
       statusDisplayText.textContent = getFearGreedLabelFromAPI(
-        fearGreedClassification,
+        fearGreedClassification
       );
       fearGreedInfo.appendChild(emojiDisplay);
       fearGreedInfo.appendChild(fearGreedValueDisplay);
@@ -269,7 +269,7 @@ export async function renderMainPage(container) {
         if (coinsFromAPI[0] && svgContainer) {
           await updateHoverSVGChart(
             coinsFromAPI[0].pair,
-            coinsFromAPI[0].symbol,
+            coinsFromAPI[0].symbol
           );
         }
 
@@ -329,7 +329,12 @@ export async function renderMainPage(container) {
             uiData.current_price !== undefined &&
             uiData.current_price !== 0
           ) {
-            price.textContent = `$${parseFloat(uiData.current_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`;
+            price.textContent = `$${parseFloat(
+              uiData.current_price
+            ).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            })}`;
           } else {
             price.textContent = "N/A";
           }

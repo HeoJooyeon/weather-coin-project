@@ -29,10 +29,10 @@ export async function fetchCoinsFromServerAPI() {
         .catch(() => ({ message: `코인 목록 API 오류: ${response.status}` }));
       console.error(
         `코인 목록 API 오류 (${response.status}):`,
-        errorData.message,
+        errorData.message
       );
       throw new Error(
-        errorData.message || `코인 목록 API 오류: ${response.status}`,
+        errorData.message || `코인 목록 API 오류: ${response.status}`
       );
     }
     const result = await response.json();
@@ -46,7 +46,7 @@ export async function fetchCoinsFromServerAPI() {
     } else {
       console.error(
         "코인 목록 데이터 파싱 실패 또는 API 오류:",
-        result.message,
+        result.message
       );
       return [];
     }
@@ -88,7 +88,7 @@ export async function fetchCoinUIData(pairSymbol) {
     // 요청에 따라 7일치 그래프는 indicator/day에서 가져오므로, 여기서는 최신 가격을 위한 API 호출을 유지.
     // 만약 indicator/day의 가장 최신 데이터가 현재 가격을 나타낸다면, 이 priceResponse 호출은 불필요할 수 있음.
     const priceResponse = await fetch(
-      `${API_BASE_URL}/coin/past?pair=${apiPair}&limit=1`,
+      `${API_BASE_URL}/coin/past?pair=${apiPair}&limit=1`
     );
     let priceData = { current_price: 0, change_24h: 0 };
 
@@ -108,7 +108,7 @@ export async function fetchCoinUIData(pairSymbol) {
       }
     } else {
       console.error(
-        `가격 정보 API 오류 (${priceResponse.status}) for ${apiPair}`,
+        `가격 정보 API 오류 (${priceResponse.status}) for ${apiPair}`
       );
     }
 
@@ -122,7 +122,7 @@ export async function fetchCoinUIData(pairSymbol) {
     const today_T_String = formatDate(today_T);
     const yesterday_T_minus_1_String = formatDate(yesterday_T_minus_1);
     const day_before_yesterday_T_minus_2_String = formatDate(
-      day_before_yesterday_T_minus_2,
+      day_before_yesterday_T_minus_2
     );
 
     // 3. 필요한 3일치 스코어 데이터 한 번에 가져오기
@@ -144,13 +144,13 @@ export async function fetchCoinUIData(pairSymbol) {
       } else {
         console.warn(
           `${apiPair} 3일치 스코어 정보 없음 또는 API 응답 형식 불일치. 응답:`,
-          indicatorResult,
+          indicatorResult
         );
       }
 
       console.log(
         `indicator/day for ${apiPair} (range ${day_before_yesterday_T_minus_2_String} to ${today_T_String}) received data for weather:`,
-        dailyScores,
+        dailyScores
       );
 
       for (const record of dailyScores) {
@@ -170,11 +170,11 @@ export async function fetchCoinUIData(pairSymbol) {
         }
       }
       console.log(
-        `Extracted scores for weather in ${apiPair}: T-2 (for Yesterday's weather)=${score_for_yesterday_weather}, T-1 (for Today's weather)=${score_for_today_weather}, T (for Tomorrow's weather)=${score_for_tomorrow_weather}`,
+        `Extracted scores for weather in ${apiPair}: T-2 (for Yesterday's weather)=${score_for_yesterday_weather}, T-1 (for Today's weather)=${score_for_today_weather}, T (for Tomorrow's weather)=${score_for_tomorrow_weather}`
       );
     } else {
       console.error(
-        `3일치 스코어 API 오류 (${indicatorResponse.status}) for ${apiPair}. URL: ${indicatorUrl}`,
+        `3일치 스코어 API 오류 (${indicatorResponse.status}) for ${apiPair}. URL: ${indicatorUrl}`
       );
     }
 
@@ -217,7 +217,7 @@ export async function fetchCoinPriceHistory(apiPair, limit = 7) {
 
     if (!response.ok) {
       console.error(
-        `7일치 지표(가격 대용) API 오류 (${response.status}) for ${apiPair}. URL: ${historyUrl}`,
+        `7일치 지표(가격 대용) API 오류 (${response.status}) for ${apiPair}. URL: ${historyUrl}`
       );
       return [];
     }
@@ -231,14 +231,14 @@ export async function fetchCoinPriceHistory(apiPair, limit = 7) {
     } else {
       console.warn(
         `${apiPair}에 대한 7일치 지표(가격 대용) 데이터가 없거나 API 응답 형식 불일치. 응답:`,
-        result,
+        result
       );
       return [];
     }
 
     console.log(
       `indicator/day for ${apiPair} (range ${startDate} to ${endDate}) received data for chart:`,
-      historicalData,
+      historicalData
     );
 
     // API 응답에서 날짜(open_time)와 가격으로 사용할 값(score)을 추출
@@ -252,7 +252,7 @@ export async function fetchCoinPriceHistory(apiPair, limit = 7) {
   } catch (error) {
     console.error(
       `${apiPair} 7일치 지표(가격 대용) 가져오기 중 예외 발생:`,
-      error,
+      error
     );
     return [];
   }
@@ -285,7 +285,7 @@ function getWeatherDetailsByScore(scoreValue) {
     return weatherConditions[numericScore];
   }
   console.warn(
-    `유효하지 않거나 범위를 벗어난 score 값(${scoreValue})입니다. '알 수 없음'으로 처리합니다.`,
+    `유효하지 않거나 범위를 벗어난 score 값(${scoreValue})입니다. '알 수 없음'으로 처리합니다.`
   );
   return weatherConditions["Unknown"];
 }
@@ -321,11 +321,11 @@ export function formatScoreBasedWeatherData(uiData, symbol) {
   }
 
   const yesterdayWeather = getWeatherDetailsByScore(
-    uiData.score_for_yesterday_weather,
+    uiData.score_for_yesterday_weather
   );
   const todayWeather = getWeatherDetailsByScore(uiData.score_for_today_weather);
   const tomorrowWeather = getWeatherDetailsByScore(
-    uiData.score_for_tomorrow_weather,
+    uiData.score_for_tomorrow_weather
   );
 
   return [
@@ -334,21 +334,36 @@ export function formatScoreBasedWeatherData(uiData, symbol) {
       icon: yesterdayWeather.icon,
       label: yesterdayWeather.label,
       description: yesterdayWeather.description,
-      tooltip: `${symbol} 어제 (T-2일 스코어: ${uiData.score_for_yesterday_weather === null || uiData.score_for_yesterday_weather === undefined ? "없음" : uiData.score_for_yesterday_weather}): ${yesterdayWeather.description}`,
+      tooltip: `${symbol} 어제 (T-2일 스코어: ${
+        uiData.score_for_yesterday_weather === null ||
+        uiData.score_for_yesterday_weather === undefined
+          ? "없음"
+          : uiData.score_for_yesterday_weather
+      }): ${yesterdayWeather.description}`,
     },
     {
       day: "today",
       icon: todayWeather.icon,
       label: todayWeather.label,
       description: todayWeather.description,
-      tooltip: `${symbol} 오늘 (T-1일 스코어: ${uiData.score_for_today_weather === null || uiData.score_for_today_weather === undefined ? "없음" : uiData.score_for_today_weather}): ${todayWeather.description}`,
+      tooltip: `${symbol} 오늘 (T-1일 스코어: ${
+        uiData.score_for_today_weather === null ||
+        uiData.score_for_today_weather === undefined
+          ? "없음"
+          : uiData.score_for_today_weather
+      }): ${todayWeather.description}`,
     },
     {
       day: "tomorrow",
       icon: tomorrowWeather.icon,
       label: tomorrowWeather.label,
       description: tomorrowWeather.description,
-      tooltip: `${symbol} 내일 (T일 스코어: ${uiData.score_for_tomorrow_weather === null || uiData.score_for_tomorrow_weather === undefined ? "없음" : uiData.score_for_tomorrow_weather}): ${tomorrowWeather.description}`,
+      tooltip: `${symbol} 내일 (T일 스코어: ${
+        uiData.score_for_tomorrow_weather === null ||
+        uiData.score_for_tomorrow_weather === undefined
+          ? "없음"
+          : uiData.score_for_tomorrow_weather
+      }): ${tomorrowWeather.description}`,
     },
   ];
 }
@@ -360,7 +375,7 @@ export async function fetchNews({ symbol, limit = 5 } = {}) {
   queryParams.append("limit", limit.toString());
   try {
     const response = await fetch(
-      `${API_BASE_URL}/news?${queryParams.toString()}`,
+      `${API_BASE_URL}/news?${queryParams.toString()}`
     );
     if (!response.ok) {
       console.error(`뉴스 API 오류 (${response.status}) for ${symbol}`);
@@ -376,7 +391,7 @@ export async function fetchNews({ symbol, limit = 5 } = {}) {
   } catch (error) {
     console.error(
       `뉴스 데이터 가져오기 중 예외 (symbol: ${symbol}, pair: ${pair}):`,
-      error,
+      error
     );
     return null;
   }
@@ -398,7 +413,7 @@ export async function fetchBoardPosts({
   if (prediction) queryParams.append("prediction", prediction);
   try {
     const response = await fetch(
-      `${API_BASE_URL}/board/post?${queryParams.toString()}`,
+      `${API_BASE_URL}/board/post?${queryParams.toString()}`
     );
     if (!response.ok) {
       console.error(`게시글 API 오류 (${response.status})`);
@@ -453,14 +468,14 @@ export async function fetchBoardPostDetail(postId) {
     } else {
       console.error(
         "게시글 상세 데이터 파싱 실패 또는 API 오류:",
-        result.message,
+        result.message
       );
       return null;
     }
   } catch (error) {
     console.error(
       `게시글 상세 정보 가져오기 중 예외 발생 (postId: ${postId}):`,
-      error,
+      error
     );
     return null;
   }
@@ -477,7 +492,7 @@ export async function fetchComments(postId, { limit = 50, offset = 0 } = {}) {
   });
   try {
     const response = await fetch(
-      `${API_BASE_URL}/board/comment/post/${postId}?${queryParams.toString()}`,
+      `${API_BASE_URL}/board/comment/post/${postId}?${queryParams.toString()}`
     );
     if (!response.ok) {
       console.error(`댓글 API 오류 (${response.status})`);
@@ -500,7 +515,7 @@ export async function fetchComments(postId, { limit = 50, offset = 0 } = {}) {
   } catch (error) {
     console.error(
       `댓글 목록 가져오기 중 예외 발생 (postId: ${postId}):`,
-      error,
+      error
     );
     return [];
   }
@@ -515,7 +530,7 @@ export async function createBoardPost({
 }) {
   if (!title || !content || !writerId) {
     console.warn(
-      "createBoardPost: 필수 필드(title, content, writerId)가 누락되었습니다.",
+      "createBoardPost: 필수 필드(title, content, writerId)가 누락되었습니다."
     );
     return null;
   }
@@ -535,7 +550,7 @@ export async function createBoardPost({
         .catch(() => ({ message: response.statusText }));
       console.error(
         `게시글 작성 API 오류 (${response.status}):`,
-        errorBody.message,
+        errorBody.message
       );
       return null;
     }
@@ -559,7 +574,7 @@ export function formatApiTimestamp(timestamp, includeTime = true) {
     if (isNaN(date.getTime())) {
       console.warn(
         "formatApiTimestamp: 유효하지 않은 타임스탬프 값:",
-        timestamp,
+        timestamp
       );
       return "시간 정보 없음";
     }
@@ -581,7 +596,7 @@ export function formatApiTimestamp(timestamp, includeTime = true) {
 export async function fetchFearGreedIndexData() {
   try {
     const response = await fetch(
-      "https://api.alternative.me/fng/?limit=1&format=json",
+      "https://api.alternative.me/fng/?limit=1&format=json"
     );
     if (!response.ok) {
       console.error("Fear & Greed API 호출 실패:", response.status);
@@ -593,7 +608,7 @@ export async function fetchFearGreedIndexData() {
     }
     console.warn(
       "Fear & Greed API 응답 형식이 올바르지 않거나 데이터가 없습니다.",
-      data,
+      data
     );
     return { value: "50", value_classification: "Neutral" };
   } catch (error) {
@@ -620,4 +635,54 @@ export function getFearGreedEmojiFromAPI(valueClassification) {
   if (valueClassification === "Greed") return "😊";
   if (valueClassification === "Extreme Greed") return "🤩";
   return "🤔";
+}
+
+export async function fetchBtcChartDataFromDB(pair) {
+  const startTime = "20250401";
+  const endTime = "20250501";
+  const response = await fetch(
+    `http://localhost:3001/api/ohlcv?pair=${pair}&startTime=${startTime}&endTime=${endTime}`
+  );
+  const json = await response.json();
+  return json.success ? json.data : [];
+}
+
+export async function fetchIndicatorData(pair) {
+  const startTime = "20250401";
+  const endTime = "20250501";
+  const res = await fetch(
+    `http://localhost:3001/api/indicator/day?pair=${pair}&startTime=${startTime}&endTime=${endTime}`
+  );
+  const json = await res.json();
+  return json;
+}
+
+export async function fetchGoldPriceData() {
+  const encodedItem = encodeURIComponent("금 99.99_1Kg"); // 한글 인코딩
+  const startDate = "20250401";
+  const endDate = "20250501";
+  const res = await fetch(
+    `http://localhost:3001/api/gold?itemName=${encodedItem}&startDate=${startDate}&endDate=${endDate}`
+  );
+  const json = await res.json();
+
+  // 응답이 배열일 경우 그대로 반환
+  if (Array.isArray(json)) return json;
+
+  // 응답이 { data: [...] } 형식일 경우
+  if (json.data) return json.data;
+
+  console.warn("[fetchGoldPriceData] Unexpected response:", json);
+  return [];
+}
+
+export async function fetchExchangeRateData() {
+  const targetCurrency = "KRW"; // 한글 인코딩
+  const startDate = "20250401";
+  const endDate = "20250501";
+  const res = await fetch(
+    `http://localhost:3001/api/exchange?targetCurrency=${targetCurrency}&startDate=${startDate}&endDate=${endDate}`
+  );
+  const json = await res.json();
+  return Array.isArray(json) ? json : json.data || [];
 }

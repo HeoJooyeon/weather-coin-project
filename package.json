@@ -11,7 +11,8 @@
     "start:client": "npm --workspace client-javascript start",
     "start:server": "npm --workspace server-node start",
     "start:python": "cd backend-python && python app.py",
-    "start:all": "concurrently \"npm run start:admin\" \"npm run start:client\" \"npm run start:server\" \"npm run start:python\""
+    "start:all": "concurrently \"npm run start:admin\" \"npm run start:client\" \"npm run start:server\" \"npm run start:python\"",
+    "start:all2": "concurrently \"npm run start:client\" \"npm run start:server\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

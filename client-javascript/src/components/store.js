@@ -1,5 +1,4 @@
 // components/store.js
-import logoImageUrl from "../favicon2.png"; // store.js의 위치 기준 상대 경로
 // 테마 설정을 가져오는 헬퍼 함수
 const getThemePreference = () => localStorage.getItem("theme") === "dark";
 
@@ -70,9 +69,191 @@ export function setupNavbar() {
 
   const searchInput = document.createElement("input");
   searchInput.type = "text";
-  searchInput.placeholder = "...";
   const searchActionBtn = document.createElement("button");
   searchActionBtn.textContent = "검색";
+
+  // **검색 자동완성 드롭다운**
+  const dropdown = document.createElement("ul");
+  dropdown.className = "search-dropdown";
+  Object.assign(dropdown.style, {
+    position: "absolute",
+    top: "100%",
+    margin: "0",
+    padding: "0",
+    listStyle: "none",
+    background: "var(--card-bg-color)",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    borderRadius: "4px",
+    maxHeight: "240px",
+    overflowY: "auto",
+    display: "none",
+    zIndex: "1001",
+  });
+  // **드롭다운 내용 갱신 함수**
+  // 기존 updateDropdown 블록 대신 이 전체를 넣으세요
+  function updateDropdown() {
+    const q = searchInput.value.trim().toLowerCase();
+    dropdown.innerHTML = "";
+
+    const COIN_LIST = [
+      {
+        rank: 1,
+        name: "비트코인",
+        symbol: "BTC",
+        graphicSymbol: "₿", // 비트코인 그래픽 심볼
+        apiSymbol: "BTCUSDT",
+        price: "$67,890.45",
+        change: "+2.34%",
+      },
+      {
+        rank: 2,
+        name: "이더리움",
+        symbol: "ETH",
+        graphicSymbol: "Ξ", // 이더리움 그래픽 심볼
+        apiSymbol: "ETHUSDT",
+        price: "$3,456.78",
+        change: "+1.23%",
+      },
+      {
+        rank: 3,
+        name: "리플",
+        symbol: "XRP",
+        graphicSymbol: "✕", // 리플 그래픽 심볼 (일반적으로 사용되는 X)
+        apiSymbol: "XRPUSDT",
+        price: "$1.23",
+        change: "-0.45%",
+      },
+      {
+        rank: 4,
+        name: "바이낸스코인",
+        symbol: "BNB",
+        graphicSymbol: "BNB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+        apiSymbol: "BNBUSDT",
+        price: "$456.78",
+        change: "+0.89%",
+      },
+      {
+        rank: 5,
+        name: "솔라나",
+        symbol: "SOL",
+        graphicSymbol: "SOL", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+        apiSymbol: "SOLUSDT",
+        price: "$123.45",
+        change: "+5.67%",
+      },
+      {
+        rank: 6,
+        name: "도지코인",
+        symbol: "DOGE",
+        graphicSymbol: "Ɖ", // 도지코인 그래픽 심볼
+        apiSymbol: "DOGEUSDT",
+        price: "$0.123",
+        change: "-1.23%",
+      },
+      {
+        rank: 7,
+        name: "카르다노",
+        symbol: "ADA",
+        graphicSymbol: "₳", // 카르다노 그래픽 심볼
+        apiSymbol: "ADAUSDT",
+        price: "$0.456",
+        change: "+0.78%",
+      },
+      {
+        rank: 8,
+        name: "트론",
+        symbol: "TRX",
+        graphicSymbol: "TRX", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+        apiSymbol: "TRXUSDT",
+        price: "$0.089",
+        change: "-0.34%",
+      },
+      {
+        rank: 9,
+        name: "시바이누",
+        symbol: "SHIB",
+        graphicSymbol: "SHIB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
+        apiSymbol: "SHIBUSDT",
+        price: "$0.00002345",
+        change: "+3.45%",
+      },
+      {
+        rank: 10,
+        name: "라이트코인",
+        symbol: "LTC",
+        graphicSymbol: "Ł", // 라이트코인 그래픽 심볼
+        apiSymbol: "LTCUSDT",
+        price: "$78.90",
+        change: "-0.67%",
+      },
+    ];
+
+    // 쿼리가 없으면 전체, 있으면 필터된 리스트
+    const listToShow = q
+      ? COIN_LIST.filter(
+          (coin) =>
+            coin.name.toLowerCase().includes(q) ||
+            coin.symbol.toLowerCase().includes(q)
+        )
+      : COIN_LIST;
+
+    // 표시할 항목이 없으면 숨기기
+    if (listToShow.length === 0) {
+      dropdown.style.display = "none";
+      return;
+    }
+
+    // 목록 렌더링
+    listToShow.forEach((coin) => {
+      const li = document.createElement("li");
+      li.className = "dropdown-item";
+      Object.assign(li.style, {
+        padding: "8px 12px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+      });
+      // 아이콘
+      const ico = document.createElement("span");
+      ico.textContent = coin.graphicSymbol || coin.symbol;
+      ico.style.marginRight = "8px";
+      // 텍스트
+      const txt = document.createElement("span");
+      txt.textContent = `${coin.name} (${coin.symbol})`;
+      li.append(ico, txt);
+
+      // 호버 스타일
+      li.addEventListener(
+        "mouseenter",
+        () => (li.style.background = "var(--input-bg-color)")
+      );
+      li.addEventListener(
+        "mouseleave",
+        () => (li.style.background = "transparent")
+      );
+
+      // 클릭 시 상세 페이지로 이동
+      li.addEventListener("click", () => {
+        window.location.hash = `#/coin/${coin.symbol}`;
+        dropdown.style.display = "none";
+        searchInput.value = "";
+      });
+
+      dropdown.appendChild(li);
+    });
+    dropdown.style.width = `${searchInput.offsetWidth}px`;
+    dropdown.style.left = `${searchInput.offsetLeft}px`;
+    dropdown.style.display = "block";
+  }
+
+  searchInput.addEventListener("input", updateDropdown);
+  searchInput.addEventListener("focus", updateDropdown);
+  searchActionBtn.addEventListener("click", updateDropdown);
+  document.addEventListener("click", (e) => {
+    if (!searchBox.contains(e.target)) dropdown.style.display = "none";
+  });
+
+  searchBox.append(searchInput, searchActionBtn, dropdown);
 
   const themeToggle = document.createElement("button");
   themeToggle.id = "theme-toggle";
