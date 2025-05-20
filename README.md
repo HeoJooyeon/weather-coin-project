@@ -6,22 +6,22 @@
 
 ---
 
-## ✅ 초기 실행 순서
+### ✅ 초기 실행 순서
 
-## 1. .env 파일 환경 변수 설정
-### - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, PORT 등 구성
+1. .env 파일 환경 변수 설정
+- DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, PORT 등 구성
 
-## 2. 스키마 생성
+2. 스키마 생성
 ```bash
 mysql -u [USER] -p [DB_NAME] < schema/create-tables/create_tables.sql
 ```
 
-## 3. 초기 CSV 데이터 로딩
+3. 초기 CSV 데이터 로딩
 ```bash
 mysql -u [USER] -p [DB_NAME] < schema/csv-data/load_csv.sql
 ```
 
-### ✅ 참고: 처음 실행 시 5년치 데이터를 불러오므로 약 10분 정도 소요될 수 있습니다.
+✅ 참고: 처음 실행 시 5년치 데이터를 불러오므로 약 10분 정도 소요될 수 있습니다.
 
 ---
 
