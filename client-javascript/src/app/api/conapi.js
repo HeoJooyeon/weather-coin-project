@@ -1,236 +1,623 @@
-// app/api/conapi.js
+// src/app/api/conapi.js
 
+const API_BASE_URL = "http://localhost:3001/api";
 
-export const COIN_LIST = [
-  {
-    rank: 1,
-    name: "비트코인",
-    symbol: "BTC",
-    graphicSymbol: "₿", // 비트코인 그래픽 심볼
-    apiSymbol: "BTCUSDT",
-    price: "$67,890.45",
-    change: "+2.34%",
-  },
-  {
-    rank: 2,
-    name: "이더리움",
-    symbol: "ETH",
-    graphicSymbol: "Ξ", // 이더리움 그래픽 심볼
-    apiSymbol: "ETHUSDT",
-    price: "$3,456.78",
-    change: "+1.23%",
-  },
-  {
-    rank: 3,
-    name: "리플",
-    symbol: "XRP",
-    graphicSymbol: "✕", // 리플 그래픽 심볼 (일반적으로 사용되는 X)
-    apiSymbol: "XRPUSDT",
-    price: "$1.23",
-    change: "-0.45%",
-  },
-  {
-    rank: 4,
-    name: "바이낸스코인",
-    symbol: "BNB",
-    graphicSymbol: "BNB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
-    apiSymbol: "BNBUSDT",
-    price: "$456.78",
-    change: "+0.89%",
-  },
-  {
-    rank: 5,
-    name: "솔라나",
-    symbol: "SOL",
-    graphicSymbol: "SOL", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
-    apiSymbol: "SOLUSDT",
-    price: "$123.45",
-    change: "+5.67%",
-  },
-  {
-    rank: 6,
-    name: "도지코인",
-    symbol: "DOGE",
-    graphicSymbol: "Ɖ", // 도지코인 그래픽 심볼
-    apiSymbol: "DOGEUSDT",
-    price: "$0.123",
-    change: "-1.23%",
-  },
-  {
-    rank: 7,
-    name: "카르다노",
-    symbol: "ADA",
-    graphicSymbol: "₳", // 카르다노 그래픽 심볼
-    apiSymbol: "ADAUSDT",
-    price: "$0.456",
-    change: "+0.78%",
-  },
-  {
-    rank: 8,
-    name: "트론",
-    symbol: "TRX",
-    graphicSymbol: "TRX", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
-    apiSymbol: "TRXUSDT",
-    price: "$0.089",
-    change: "-0.34%",
-  },
-  {
-    rank: 9,
-    name: "시바이누",
-    symbol: "SHIB",
-    graphicSymbol: "SHIB", // 그래픽 심볼 없는 경우 텍스트 심볼 사용
-    apiSymbol: "SHIBUSDT",
-    price: "$0.00002345",
-    change: "+3.45%",
-  },
-  {
-    rank: 10,
-    name: "라이트코인",
-    symbol: "LTC",
-    graphicSymbol: "Ł", // 라이트코인 그래픽 심볼
-    apiSymbol: "LTCUSDT",
-    price: "$78.90",
-    change: "-0.67%",
-  },
-];
-
-// 랜덤으로 기술지표 점수 반환 (실제로는 계산 또는 API 호출 필요)
-export function getTechnicalIndicators(symbol) {
-  // console.log(`Fetching technical indicators for ${symbol}...`); // 실제 API 호출 시 유용
-  return {
-    ma: Math.random() * 100,
-    ema: Math.random() * 100,
-    rsi: Math.random() * 100,
-    macd: (Math.random() * 2 - 1) * 10,
+// 코인 심볼에 따른 그래픽 심볼 매핑 함수
+function getSymbolGraphic(symbol) {
+  const symbolMap = {
+    BTC: "₿",
+    ETH: "Ξ",
+    XRP: "✕",
+    BNB: "BNB",
+    SOL: "SOL",
+    DOGE: "Ɖ",
+    ADA: "₳",
+    TRX: "TRX",
+    SHIB: "SHIB",
+    LTC: "Ł",
   };
+  return symbolMap[symbol] || symbol;
 }
 
-// 가상의 날씨예측: 점수에 따라 아이콘 결정 (3일치 예보 반환)
-export function getWeatherPrediction(symbol) {
-  // console.log(`Fetching weather prediction for ${symbol}...`); // 실제 API 호출 시 유용
-  const weathers = [
-    { icon: "🔆", label: "맑음", description: "강세 예상" },
-    { icon: "⛅️", label: "구름조금", description: "약세장 예상" },
-    { icon: "☁️", label: "흐림", description: "관망세 예상" },
-    { icon: "🌧️", label: "비", description: "하락세 예상" },
-    { icon: "⛈️", label: "폭풍", description: "급락세 예상" },
-    { icon: "❄️", label: "눈", description: "변동성 확대" },
-    { icon: "💨", label: "바람", description: "시장 불안정" },
-  ];
-
-  const dailyForecasts = ["yesterday", "today", "tomorrow"].map((dayType) => {
-    const idx = Math.floor(Math.random() * weathers.length);
-    const weather = weathers[idx];
-    return {
-      day: dayType,
-      icon: weather.icon,
-      label: weather.label,
-      description: weather.description,
-      tooltip: `${symbol} ${dayType === "today" ? "오늘" : dayType === "yesterday" ? "어제" : "내일"} 예상: ${weather.description}`,
-    };
-  });
-
-  return dailyForecasts;
-}
-
-// 가상의 시가총액 차트용 데이터 (7일치 랜덤 데이터 생성)
-export function getMarketCapHistory(symbol) {
-  // console.log(`Fetching market cap history for ${symbol}...`); // 실제 API 호출 시 유용
-  const labels = [];
-  const data = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
-    // 심볼별로 약간 다른 패턴을 주도록 랜덤 값 범위 조정 (예시)
-    let baseValue = 100;
-    if (symbol === "BTC") baseValue = 500;
-    else if (symbol === "ETH") baseValue = 300;
-    data.push(baseValue + Math.random() * (baseValue / 2));
+// 서버 API에서 코인 목록을 가져오는 함수
+export async function fetchCoinsFromServerAPI() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/coins`);
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: `코인 목록 API 오류: ${response.status}` }));
+      console.error(
+        `코인 목록 API 오류 (${response.status}):`,
+        errorData.message,
+      );
+      throw new Error(
+        errorData.message || `코인 목록 API 오류: ${response.status}`,
+      );
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      return result.data.map((coin) => ({
+        ...coin,
+        pair: coin.pair || `${coin.symbol}USDT`,
+        logo_url: coin.logourl || coin.logo_url,
+        graphicSymbol: getSymbolGraphic(coin.symbol),
+      }));
+    } else {
+      console.error(
+        "코인 목록 데이터 파싱 실패 또는 API 오류:",
+        result.message,
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error("코인 목록 가져오기 중 예외 발생:", error, error.stack);
+    return [];
   }
-  return { labels, data };
 }
 
-// 가상의 공포/탐욕 지수 (0 ~ 100 사이의 랜덤 정수)
-export function getFearGreedIndex() {
-  return Math.floor(Math.random() * 101);
+// 날짜를 YYYY-MM-DD 형식의 문자열로 포맷하는 함수
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+// 코인 가격 및 3일치 날씨(스코어 기반) 정보를 가져오는 함수
+export async function fetchCoinUIData(pairSymbol) {
+  let originalPair = pairSymbol;
+  if (!originalPair) {
+    console.warn("fetchCoinUIData: pairSymbol 값이 없습니다.");
+    return {
+      current_price: 0,
+      change_24h: 0,
+      score_for_yesterday_weather: null,
+      score_for_today_weather: null,
+      score_for_tomorrow_weather: null,
+    };
+  }
+
+  let apiPair = originalPair;
+  if (!apiPair.endsWith("USDT") && apiPair.length <= 4) {
+    apiPair = `${apiPair}USDT`;
+  }
+
+  try {
+    // 1. 가격 정보 가져오기 - 이 부분은 실제 현재 가격을 가져오는 API로 대체하는 것이 좋으나,
+    // 요청에 따라 7일치 그래프는 indicator/day에서 가져오므로, 여기서는 최신 가격을 위한 API 호출을 유지.
+    // 만약 indicator/day의 가장 최신 데이터가 현재 가격을 나타낸다면, 이 priceResponse 호출은 불필요할 수 있음.
+    const priceResponse = await fetch(
+      `${API_BASE_URL}/coin/past?pair=${apiPair}&limit=1`,
+    );
+    let priceData = { current_price: 0, change_24h: 0 };
+
+    if (priceResponse.ok) {
+      const priceResult = await priceResponse.json();
+      if (
+        priceResult.success &&
+        priceResult.data &&
+        priceResult.data.length > 0
+      ) {
+        const pData = priceResult.data[0];
+        priceData.current_price =
+          pData.current_price || pData.currentprice || 0;
+        priceData.change_24h = pData.change_24h || pData.change24h || 0;
+      } else {
+        console.warn(`${apiPair} 가격 정보 없음. API 응답:`, priceResult);
+      }
+    } else {
+      console.error(
+        `가격 정보 API 오류 (${priceResponse.status}) for ${apiPair}`,
+      );
+    }
+
+    // 2. 스코어 가져올 날짜 계산: 오늘(T), 어제(T-1), 그저께(T-2)
+    const today_T = new Date();
+    const yesterday_T_minus_1 = new Date(today_T);
+    yesterday_T_minus_1.setDate(today_T.getDate() - 1);
+    const day_before_yesterday_T_minus_2 = new Date(today_T);
+    day_before_yesterday_T_minus_2.setDate(today_T.getDate() - 2);
+
+    const today_T_String = formatDate(today_T);
+    const yesterday_T_minus_1_String = formatDate(yesterday_T_minus_1);
+    const day_before_yesterday_T_minus_2_String = formatDate(
+      day_before_yesterday_T_minus_2,
+    );
+
+    // 3. 필요한 3일치 스코어 데이터 한 번에 가져오기
+    const indicatorUrl = `${API_BASE_URL}/indicator/day?pair=${apiPair}&startTime=${day_before_yesterday_T_minus_2_String}&endTime=${today_T_String}&limit=3`;
+
+    let score_for_yesterday_weather = null;
+    let score_for_today_weather = null;
+    let score_for_tomorrow_weather = null;
+
+    const indicatorResponse = await fetch(indicatorUrl);
+    if (indicatorResponse.ok) {
+      const indicatorResult = await indicatorResponse.json();
+      let dailyScores = [];
+
+      if (indicatorResult.success && indicatorResult.data) {
+        dailyScores = indicatorResult.data;
+      } else if (Array.isArray(indicatorResult)) {
+        dailyScores = indicatorResult;
+      } else {
+        console.warn(
+          `${apiPair} 3일치 스코어 정보 없음 또는 API 응답 형식 불일치. 응답:`,
+          indicatorResult,
+        );
+      }
+
+      console.log(
+        `indicator/day for ${apiPair} (range ${day_before_yesterday_T_minus_2_String} to ${today_T_String}) received data for weather:`,
+        dailyScores,
+      );
+
+      for (const record of dailyScores) {
+        const recordDate = record.open_time
+          ? formatDate(new Date(record.open_time))
+          : null;
+        if (recordDate && record.score !== undefined) {
+          if (recordDate === day_before_yesterday_T_minus_2_String) {
+            score_for_yesterday_weather = record.score;
+          }
+          if (recordDate === yesterday_T_minus_1_String) {
+            score_for_today_weather = record.score;
+          }
+          if (recordDate === today_T_String) {
+            score_for_tomorrow_weather = record.score;
+          }
+        }
+      }
+      console.log(
+        `Extracted scores for weather in ${apiPair}: T-2 (for Yesterday's weather)=${score_for_yesterday_weather}, T-1 (for Today's weather)=${score_for_today_weather}, T (for Tomorrow's weather)=${score_for_tomorrow_weather}`,
+      );
+    } else {
+      console.error(
+        `3일치 스코어 API 오류 (${indicatorResponse.status}) for ${apiPair}. URL: ${indicatorUrl}`,
+      );
+    }
+
+    return {
+      current_price: priceData.current_price, // 이 가격은 /coin/past 에서 가져온 최신 가격
+      change_24h: priceData.change_24h,
+      score_for_yesterday_weather,
+      score_for_today_weather,
+      score_for_tomorrow_weather,
+    };
+  } catch (error) {
+    console.error(`${originalPair} UI 데이터 가져오기 중 예외 발생:`, error);
+    return {
+      current_price: 0,
+      change_24h: 0,
+      score_for_yesterday_weather: null,
+      score_for_today_weather: null,
+      score_for_tomorrow_weather: null,
+    };
+  }
 }
 
-// 공포/탐욕 지수 값에 따른 레이블 반환
-export function getFearGreedLabel(value) {
-  if (value < 20) return "극단적 공포";
-  if (value < 40) return "공포";
-  if (value < 60) return "중립";
-  if (value < 80) return "탐욕";
-  return "극단적 탐욕";
-}
-
-// 공포/탐욕 지수 값에 따른 이모티콘 반환
-export function getFearGreedEmoji(value) {
-  if (value < 20) return "😱";
-  if (value < 40) return "😨";
-  if (value < 60) return "😐";
-  if (value < 80) return "😊";
-  return "🤩"; // output5.txt 에서는 "🤩" 로 되어있음. (이전 답변은 "🤑" 이었음)
-}
-
-// 추가: 실제 CoinAPI 연동을 위한 예시 함수 (주석 처리됨, API 키 필요)
-/*
-const COINAPI_KEY = "YOUR_API_KEY"; // 실제 API 키로 교체해야 합니다.
-const BASE_URL = "https://rest.coinapi.io/v1";
-
-export async function fetchCoinPrice(symbol = "BTC", convertTo = "USD") {
-  if (!COINAPI_KEY || COINAPI_KEY === "YOUR_API_KEY") {
-    console.warn("CoinAPI key is not set. Returning mock data.");
-    return Math.random() * 70000; // 목업 데이터 반환
+// 특정 코인의 7일치 "가격" 이력을 coin_indicator_day 테이블에서 가져오는 함수 (수정됨)
+// 가격으로 사용할 필드는 'score'로 가정 (실제 가격 필드가 있다면 그것으로 변경)
+export async function fetchCoinPriceHistory(apiPair, limit = 7) {
+  if (!apiPair) {
+    console.warn("fetchCoinPriceHistory: apiPair 값이 없습니다.");
+    return [];
   }
   try {
-    const response = await fetch(`${BASE_URL}/exchangerate/${symbol}/${convertTo}`, {
-      headers: {
-        'X-CoinAPI-Key': COINAPI_KEY,
-      },
-    });
+    const today = new Date();
+    const endDate = formatDate(today);
+    const startDateObj = new Date(today);
+    startDateObj.setDate(today.getDate() - (limit - 1)); // limit일 전부터 오늘까지
+    const startDate = formatDate(startDateObj);
+
+    // /indicator/day API 사용
+    const historyUrl = `${API_BASE_URL}/indicator/day?pair=${apiPair}&startTime=${startDate}&endTime=${endDate}&limit=${limit}`;
+    const response = await fetch(historyUrl);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`CoinAPI Error: ${response.status} - ${errorData.message || 'Failed to fetch price'}`);
+      console.error(
+        `7일치 지표(가격 대용) API 오류 (${response.status}) for ${apiPair}. URL: ${historyUrl}`,
+      );
+      return [];
     }
-    const data = await response.json();
-    return data.rate;
+    const result = await response.json();
+    let historicalData = [];
+
+    if (result.success && result.data) {
+      historicalData = result.data;
+    } else if (Array.isArray(result)) {
+      historicalData = result;
+    } else {
+      console.warn(
+        `${apiPair}에 대한 7일치 지표(가격 대용) 데이터가 없거나 API 응답 형식 불일치. 응답:`,
+        result,
+      );
+      return [];
+    }
+
+    console.log(
+      `indicator/day for ${apiPair} (range ${startDate} to ${endDate}) received data for chart:`,
+      historicalData,
+    );
+
+    // API 응답에서 날짜(open_time)와 가격으로 사용할 값(score)을 추출
+    // 데이터는 시간 순으로 정렬되어야 함 (오래된 -> 최신)
+    return historicalData
+      .map((item) => ({
+        date: item.open_time, // 날짜 필드
+        price: item.score, // 가격 대신 score 필드 사용 (실제 가격 필드가 있다면 변경)
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
   } catch (error) {
-    console.error('Error fetching data from CoinAPI:', error);
-    throw error; // 에러를 다시 던져서 호출한 쪽에서 처리하도록 함
+    console.error(
+      `${apiPair} 7일치 지표(가격 대용) 가져오기 중 예외 발생:`,
+      error,
+    );
+    return [];
   }
 }
 
-export async function fetchHistoricalData(symbol = "BTCUSDT", periodId = "1DAY", timeStart, timeEnd) {
-  if (!COINAPI_KEY || COINAPI_KEY === "YOUR_API_KEY") {
-    console.warn("CoinAPI key is not set. Returning mock historical data.");
-    return getMarketCapHistory(symbol.replace('USDT', '')).data.map((val, index) => ({
-        time_period_start: new Date(new Date().setDate(new Date().getDate() - (6 - index))).toISOString(),
-        price_close: val
-    })); // 목업 데이터 반환
+// 날씨 아이콘 및 설명 매핑
+export const weatherConditions = {
+  1: {
+    icon: "⛈️",
+    label: "매우 나쁨",
+    description: "급락세 예상, 투자 위험 매우 높음",
+  },
+  2: { icon: "🌧️", label: "나쁨", description: "하락세 예상, 투자 위험 높음" },
+  3: { icon: "☁️", label: "보통", description: "관망세 또는 혼조세 예상" },
+  4: { icon: "⛅️", label: "좋음", description: "상승세 예상, 투자 기회 모색" },
+  5: {
+    icon: "🔆",
+    label: "매우 좋음",
+    description: "강한 상승세 예상, 적극 투자 고려",
+  },
+  Unknown: { icon: "❓", label: "알 수 없음", description: "정보 없음" },
+};
+
+function getWeatherDetailsByScore(scoreValue) {
+  if (scoreValue === undefined || scoreValue === null || scoreValue === "") {
+    return weatherConditions["Unknown"];
   }
-  const startDate = timeStart || new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0] + "T00:00:00";
-  const endDate = timeEnd || new Date().toISOString().split('T')[0] + "T23:59:59";
-  
+  const numericScore = parseInt(scoreValue);
+  if (!isNaN(numericScore) && weatherConditions[numericScore]) {
+    return weatherConditions[numericScore];
+  }
+  console.warn(
+    `유효하지 않거나 범위를 벗어난 score 값(${scoreValue})입니다. '알 수 없음'으로 처리합니다.`,
+  );
+  return weatherConditions["Unknown"];
+}
+
+export function getWeatherIcon(scoreValue) {
+  return getWeatherDetailsByScore(scoreValue).icon;
+}
+
+export function getWeatherLabel(scoreValue) {
+  return getWeatherDetailsByScore(scoreValue).label;
+}
+
+export function getWeatherDescription(scoreValue) {
+  return getWeatherDetailsByScore(scoreValue).description;
+}
+
+export function formatScoreBasedWeatherData(uiData, symbol) {
+  if (!uiData) {
+    const unknownWeather = weatherConditions["Unknown"];
+    return [
+      {
+        day: "yesterday",
+        ...unknownWeather,
+        tooltip: `${symbol} 어제: 정보 없음`,
+      },
+      { day: "today", ...unknownWeather, tooltip: `${symbol} 오늘: 정보 없음` },
+      {
+        day: "tomorrow",
+        ...unknownWeather,
+        tooltip: `${symbol} 내일: 정보 없음`,
+      },
+    ];
+  }
+
+  const yesterdayWeather = getWeatherDetailsByScore(
+    uiData.score_for_yesterday_weather,
+  );
+  const todayWeather = getWeatherDetailsByScore(uiData.score_for_today_weather);
+  const tomorrowWeather = getWeatherDetailsByScore(
+    uiData.score_for_tomorrow_weather,
+  );
+
+  return [
+    {
+      day: "yesterday",
+      icon: yesterdayWeather.icon,
+      label: yesterdayWeather.label,
+      description: yesterdayWeather.description,
+      tooltip: `${symbol} 어제 (T-2일 스코어: ${uiData.score_for_yesterday_weather === null || uiData.score_for_yesterday_weather === undefined ? "없음" : uiData.score_for_yesterday_weather}): ${yesterdayWeather.description}`,
+    },
+    {
+      day: "today",
+      icon: todayWeather.icon,
+      label: todayWeather.label,
+      description: todayWeather.description,
+      tooltip: `${symbol} 오늘 (T-1일 스코어: ${uiData.score_for_today_weather === null || uiData.score_for_today_weather === undefined ? "없음" : uiData.score_for_today_weather}): ${todayWeather.description}`,
+    },
+    {
+      day: "tomorrow",
+      icon: tomorrowWeather.icon,
+      label: tomorrowWeather.label,
+      description: tomorrowWeather.description,
+      tooltip: `${symbol} 내일 (T일 스코어: ${uiData.score_for_tomorrow_weather === null || uiData.score_for_tomorrow_weather === undefined ? "없음" : uiData.score_for_tomorrow_weather}): ${tomorrowWeather.description}`,
+    },
+  ];
+}
+
+// --- 뉴스, 게시판, 기타 유틸리티 함수 (변경 없음) ---
+export async function fetchNews({ symbol, limit = 5 } = {}) {
+  const queryParams = new URLSearchParams();
+  if (symbol) queryParams.append("symbol", symbol);
+  queryParams.append("limit", limit.toString());
   try {
     const response = await fetch(
-      `${BASE_URL}/ohlcv/${symbol.startsWith('X:') ? symbol : 'BITSTAMP_SPOT_' + symbol.replace('USDT', '_USD')}/history?period_id=${periodId}&time_start=${startDate}&time_end=${endDate}`,
-      {
-        headers: {
-          'X-CoinAPI-Key': COINAPI_KEY,
-        },
-      }
+      `${API_BASE_URL}/news?${queryParams.toString()}`,
     );
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`CoinAPI Error: ${response.status} - ${errorData.message || 'Failed to fetch historical data'}`);
+      console.error(`뉴스 API 오류 (${response.status}) for ${symbol}`);
+      return null;
     }
-    const data = await response.json();
-    return data;
+    const result = await response.json();
+    if (result.success && result.data) {
+      return result.data;
+    } else {
+      console.error("뉴스 데이터 파싱 실패 또는 API 오류:", result.message);
+      return null;
+    }
   } catch (error) {
-    console.error('Error fetching historical data from CoinAPI:', error);
-    throw error;
+    console.error(
+      `뉴스 데이터 가져오기 중 예외 (symbol: ${symbol}, pair: ${pair}):`,
+      error,
+    );
+    return null;
   }
 }
-*/
+
+export async function fetchBoardPosts({
+  limit = 10,
+  offset = 0,
+  coinSymbol = "",
+  sort = "",
+  prediction = "",
+} = {}) {
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
+  if (coinSymbol) queryParams.append("coin_symbol", coinSymbol);
+  if (sort) queryParams.append("sort", sort);
+  if (prediction) queryParams.append("prediction", prediction);
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/board/post?${queryParams.toString()}`,
+    );
+    if (!response.ok) {
+      console.error(`게시글 API 오류 (${response.status})`);
+      return [];
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      return result.data.map((post) => ({
+        postid: post.postid || post.post_id,
+        title: post.title,
+        content: post.content,
+        writerid: post.writerid || post.writer_id,
+        viewcount: post.viewcount || post.view_count,
+        likes: post.likes,
+        createdat: post.createdat || post.created_at,
+        updatedat: post.updatedat || post.updated_at,
+        coinSymbol: post.coinSymbol || post.coin_symbol || coinSymbol || null,
+      }));
+    } else {
+      console.error("게시글 데이터 파싱 실패 또는 API 오류:", result.message);
+      return [];
+    }
+  } catch (error) {
+    console.error("게시글 데이터 가져오기 중 예외 발생:", error);
+    return [];
+  }
+}
+
+export async function fetchBoardPostDetail(postId) {
+  if (!postId) {
+    console.warn("fetchBoardPostDetail: postId가 없습니다.");
+    return null;
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/board/post/${postId}`);
+    if (!response.ok) {
+      console.error(`게시글 상세 API 오류 (${response.status})`);
+      return null;
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      return {
+        postid: result.data.postid || result.data.post_id,
+        title: result.data.title,
+        content: result.data.content,
+        writerid: result.data.writerid || result.data.writer_id,
+        viewcount: result.data.viewcount || result.data.view_count,
+        likes: result.data.likes,
+        createdat: result.data.createdat || result.data.created_at,
+        updatedat: result.data.updatedat || result.data.updated_at,
+      };
+    } else {
+      console.error(
+        "게시글 상세 데이터 파싱 실패 또는 API 오류:",
+        result.message,
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error(
+      `게시글 상세 정보 가져오기 중 예외 발생 (postId: ${postId}):`,
+      error,
+    );
+    return null;
+  }
+}
+
+export async function fetchComments(postId, { limit = 50, offset = 0 } = {}) {
+  if (!postId) {
+    console.warn("fetchComments: postId가 없습니다.");
+    return [];
+  }
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/board/comment/post/${postId}?${queryParams.toString()}`,
+    );
+    if (!response.ok) {
+      console.error(`댓글 API 오류 (${response.status})`);
+      return [];
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      return result.data.map((comment) => ({
+        commentid: comment.commentid || comment.comment_id,
+        postid: comment.postid || comment.post_id,
+        writerid: comment.writerid || comment.writer_id,
+        content: comment.content,
+        likes: comment.likes,
+        createdat: comment.createdat || comment.created_at,
+      }));
+    } else {
+      console.error("댓글 데이터 파싱 실패 또는 API 오류:", result.message);
+      return [];
+    }
+  } catch (error) {
+    console.error(
+      `댓글 목록 가져오기 중 예외 발생 (postId: ${postId}):`,
+      error,
+    );
+    return [];
+  }
+}
+
+export async function createBoardPost({
+  title,
+  content,
+  writerId,
+  coinSymbol,
+  prediction,
+}) {
+  if (!title || !content || !writerId) {
+    console.warn(
+      "createBoardPost: 필수 필드(title, content, writerId)가 누락되었습니다.",
+    );
+    return null;
+  }
+  try {
+    const payload = { title, content, writerid: writerId };
+    if (coinSymbol) payload.coin_symbol = coinSymbol;
+    if (prediction) payload.prediction = prediction;
+
+    const response = await fetch(`${API_BASE_URL}/board/post`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const errorBody = await response
+        .json()
+        .catch(() => ({ message: response.statusText }));
+      console.error(
+        `게시글 작성 API 오류 (${response.status}):`,
+        errorBody.message,
+      );
+      return null;
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      return result.data;
+    } else {
+      console.error("게시글 작성 실패:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("게시글 작성 중 예외 발생:", error);
+    return null;
+  }
+}
+
+export function formatApiTimestamp(timestamp, includeTime = true) {
+  if (!timestamp) return "시간 정보 없음";
+  try {
+    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) {
+      console.warn(
+        "formatApiTimestamp: 유효하지 않은 타임스탬프 값:",
+        timestamp,
+      );
+      return "시간 정보 없음";
+    }
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    if (includeTime) {
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    console.error("날짜 포맷팅 오류:", e, "입력값:", timestamp);
+    return String(timestamp);
+  }
+}
+
+export async function fetchFearGreedIndexData() {
+  try {
+    const response = await fetch(
+      "https://api.alternative.me/fng/?limit=1&format=json",
+    );
+    if (!response.ok) {
+      console.error("Fear & Greed API 호출 실패:", response.status);
+      return { value: "50", value_classification: "Neutral" };
+    }
+    const data = await response.json();
+    if (data && data.data && data.data.length > 0) {
+      return data.data[0];
+    }
+    console.warn(
+      "Fear & Greed API 응답 형식이 올바르지 않거나 데이터가 없습니다.",
+      data,
+    );
+    return { value: "50", value_classification: "Neutral" };
+  } catch (error) {
+    console.error("Fear & Greed API 통신 오류:", error);
+    return { value: "50", value_classification: "Neutral" };
+  }
+}
+
+export function getFearGreedLabelFromAPI(valueClassification) {
+  const labelMap = {
+    "Extreme Fear": "극단적 공포",
+    Fear: "공포",
+    Neutral: "중립",
+    Greed: "탐욕",
+    "Extreme Greed": "극단적 탐욕",
+  };
+  return labelMap[valueClassification] || valueClassification || "중립";
+}
+
+export function getFearGreedEmojiFromAPI(valueClassification) {
+  if (valueClassification === "Extreme Fear") return "😱";
+  if (valueClassification === "Fear") return "😨";
+  if (valueClassification === "Neutral") return "😐";
+  if (valueClassification === "Greed") return "😊";
+  if (valueClassification === "Extreme Greed") return "🤩";
+  return "🤔";
+}

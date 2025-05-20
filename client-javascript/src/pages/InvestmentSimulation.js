@@ -4,44 +4,45 @@
 // 실제 프로젝트에서는 이 함수들을 공통 API 모듈 (예: ../app/api/conapi.js)로 옮기거나,
 // 해당 모듈에서 import하여 사용하는 것이 좋습니다.
 const fetchCoinList = async () => {
-  return new Promise(resolve => setTimeout(() => resolve([
-    { id: 'Bitcoin', name: 'Bitcoin (BTC)', pair: 'BTCUSDT' },
-    { id: 'Ethereum', name: 'Ethereum (ETH)', pair: 'ETHUSDT' },
-    { id: 'Dogecoin', name: 'Dogecoin (DOGE)', pair: 'DOGEUSDT' },
-    { id: 'Ripple', name: 'Ripple (XRP)', pair: 'XRPUSDT' },
-    { id: 'Binance Coin', name: 'Binance Coin (BNB)', pair: 'BNBUSDT' },
-    { id: 'Solana', name: 'Solana (SOL)', pair: 'SOLUSDT' },
-    { id: 'Cardano', name: 'Cardano (ADA)', pair: 'ADAUSDT' },
-    { id: 'TRON', name: 'TRON (TRX)', pair: 'TRXUSDT' },
-    { id: 'Shiba Inu', name: 'Shiba Inu(SHIB)', pair: 'SHIBUSDT' },
-    { id: 'Litecoin', name: 'Litecoin (LTC)', pair: 'LTCUSDT' }
-  ]), 500));
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve([
+          { id: "bitcoin", name: "Bitcoin (BTC)", symbol: "BTC" },
+          { id: "ethereum", name: "Ethereum (ETH)", symbol: "ETH" },
+          { id: "dogecoin", name: "Dogecoin (DOGE)", symbol: "DOGE" },
+        ]),
+      500,
+    ),
+  );
 };
 
 const fetchHistoricalData = async (coinId, days) => {
-  return new Promise(resolve => setTimeout(() => {
-    const prices = [];
-    let price = Math.random() * 50000 + 10000;
-    for (let i = 0; i < days; i++) {
-      prices.push(price);
-      price *= (1 + (Math.random() - 0.48) * 0.1); // 약간의 변동성 추가
-    }
-    resolve(prices.reverse()); // 최신 데이터가 마지막에 오도록
-  }, 1000));
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      const prices = [];
+      let price = Math.random() * 50000 + 10000;
+      for (let i = 0; i < days; i++) {
+        prices.push(price);
+        price *= 1 + (Math.random() - 0.48) * 0.1; // 약간의 변동성 추가
+      }
+      resolve(prices.reverse()); // 최신 데이터가 마지막에 오도록
+    }, 1000),
+  );
 };
 
 // --- 페이지 상태 변수 ---
 let appState = {
   coins: [],
-  selectedCoinId: '',
+  selectedCoinId: "",
   investmentAmount: 1000,
   investmentPeriod: 30,
   simulationResult: null,
   isLoading: false,
-  error: '',
+  error: "",
 };
 
-// --- DOM 요소 참조 변수 ---0
+// --- DOM 요소 참조 변수 ---
 let pageElements = {
   container: null,
   coinSelect: null,
@@ -57,7 +58,7 @@ function updateMeta(title, description) {
   document.title = title;
   let metaDesc = document.querySelector('meta[name="description"]');
   if (!metaDesc) {
-    metaDesc = document.createElement('meta');
+    metaDesc = document.createElement("meta");
     metaDesc.name = "description";
     document.head.appendChild(metaDesc);
   }
@@ -68,33 +69,22 @@ function updateMeta(title, description) {
 
 // 전체 페이지 레이아웃 생성
 function createPageLayout(appContainer) {
-  appContainer.innerHTML = ''; // 이전 내용 지우기
-  updateMeta('수익률 예측 시뮬레이션 - My Crypto Tracker', '선택한 암호화폐에 대한 투자 수익률을 예측해보세요.');
+  appContainer.innerHTML = ""; // 이전 내용 지우기
+  updateMeta(
+    "수익률 예측 시뮬레이션 - My Crypto Tracker",
+    "선택한 암호화폐에 대한 투자 수익률을 예측해보세요.",
+  );
 
-  pageElements.container = document.createElement('div');
-  pageElements.container.className = 'simulation-page-container';
+  pageElements.container = document.createElement("div");
+  pageElements.container.className = "simulation-page-container";
 
   // 헤더 생성
-  const headerEl = document.createElement('header');
-headerEl.className = 'page-header';
-
-// h2와 p를 각각 따로 생성
-const h2 = document.createElement('h2');
-h2.textContent = '수익률 예측 시뮬레이션🔄';
-h2.style.cursor = 'pointer'; // 클릭 가능하게 스타일 적용
-h2.addEventListener('click', () => {
-  // 결과 초기화
-  appState.simulationResult = null;
-  appState.error = '';
-  updateResultsArea(); // 결과 영역 비우기
-  updateErrorMessage(); // 오류 메시지도 숨기기
-});
-
-const p = document.createElement('p');
-p.textContent = '과거 데이터를 기반으로 미래 투자 수익률을 예측해 보세요.';
-
-headerEl.appendChild(h2);
-headerEl.appendChild(p);
+  const headerEl = document.createElement("header");
+  headerEl.className = "page-header";
+  headerEl.innerHTML = `
+    <h2>수익률 예측 시뮬레이션🔄</h2>
+    <p>과거 데이터를 기반으로 미래 투자 수익률을 예측해 보세요.</p>
+  `;
   pageElements.container.appendChild(headerEl);
 
   // 입력 폼 생성
@@ -102,14 +92,14 @@ headerEl.appendChild(p);
   pageElements.container.appendChild(formContainerEl);
 
   // 오류 메시지 영역
-  pageElements.errorMessage = document.createElement('p');
-  pageElements.errorMessage.className = 'error-message';
-  pageElements.errorMessage.style.display = 'none';
+  pageElements.errorMessage = document.createElement("p");
+  pageElements.errorMessage.className = "error-message";
+  pageElements.errorMessage.style.display = "none";
   pageElements.container.appendChild(pageElements.errorMessage);
 
   // 결과 표시 영역
-  pageElements.resultsArea = document.createElement('div');
-  pageElements.resultsArea.className = 'simulation-results-area';
+  pageElements.resultsArea = document.createElement("div");
+  pageElements.resultsArea.className = "simulation-results-area";
   pageElements.container.appendChild(pageElements.resultsArea);
 
   appContainer.appendChild(pageElements.container);
@@ -117,21 +107,21 @@ headerEl.appendChild(p);
 
 // 입력 폼 요소 생성
 function createFormElement() {
-  const formContainer = document.createElement('div');
-  formContainer.className = 'simulation-form-container';
+  const formContainer = document.createElement("div");
+  formContainer.className = "simulation-form-container";
 
-  const formGrid = document.createElement('div');
-  formGrid.className = 'form-grid';
+  const formGrid = document.createElement("div");
+  formGrid.className = "form-grid";
 
   // 코인 선택
-  const coinGroup = document.createElement('div');
-  coinGroup.className = 'form-group';
-  const coinLabel = document.createElement('label');
-  coinLabel.htmlFor = 'coin-select';
-  coinLabel.textContent = '코인 선택:';
-  pageElements.coinSelect = document.createElement('select');
-  pageElements.coinSelect.id = 'coin-select';
-  pageElements.coinSelect.addEventListener('change', (e) => {
+  const coinGroup = document.createElement("div");
+  coinGroup.className = "form-group";
+  const coinLabel = document.createElement("label");
+  coinLabel.htmlFor = "coin-select";
+  coinLabel.textContent = "코인 선택:";
+  pageElements.coinSelect = document.createElement("select");
+  pageElements.coinSelect.id = "coin-select";
+  pageElements.coinSelect.addEventListener("change", (e) => {
     appState.selectedCoinId = e.target.value;
   });
   coinGroup.appendChild(coinLabel);
@@ -139,156 +129,49 @@ function createFormElement() {
   formGrid.appendChild(coinGroup);
 
   // 투자 금액
-const amountGroup = document.createElement('div');
-amountGroup.className = 'form-group';
-
-const amountLabel = document.createElement('label');
-amountLabel.htmlFor = 'investment-amount';
-amountLabel.textContent = '투자 금액 (₩):';
-
-pageElements.amountInput = document.createElement('input');
-pageElements.amountInput.type = 'number';
-pageElements.amountInput.id = 'investment-amount';
-pageElements.amountInput.placeholder = '일천원에서 일억원 사이 입력';  // 문구 변경
-pageElements.amountInput.min = '1000';
-pageElements.amountInput.max = '100000000';
-
-
-// 검증
-pageElements.amountInput.addEventListener('input', (e) => {
-  const raw = e.target.value;
-
-  // 입력이 빈칸일 경우: 상태 초기화
-  if (raw.trim() === '') {
-    appState.investmentAmount = 0;
-    return;
-  }
-
-  // 숫자가 아니면 무시
-  if (!/^\d+$/.test(raw)) return;
-  const value = parseInt(raw, 10);
-  appState.investmentAmount = value;
-});
-
-// 포커스 아웃될 때 값 보정
-pageElements.amountInput.addEventListener('blur', (e) => {
-  let value = parseInt(e.target.value, 10);
-
-  // 최소값 보정
-  if (value < 1000) value = 1000;
-
-  // 최대값 보정
-  if (value > 100000000) value = 100000000;
-
-  // 1000원 단위 반올림
-  if (value % 1000 !== 0) value = Math.round(value / 1000) * 1000;
-
-  // 보정된 값을 input에 다시 반영
-  e.target.value = value;
-
-  // 상태 반영
-  appState.investmentAmount = value;
-});
-
-amountGroup.appendChild(amountLabel);
-amountGroup.appendChild(pageElements.amountInput);
-formGrid.appendChild(amountGroup);
-
-
-// 투자 기간 (과거 / 미래 선택형)
-const periodGroup = document.createElement('div');
-periodGroup.className = 'form-group';
-
-// 라벨
-const periodLabel = document.createElement('label');
-periodLabel.textContent = '투자 기간 선택:';
-periodGroup.appendChild(periodLabel);
-
-// 탭 버튼 컨테이너
-const tabContainer = document.createElement('div');
-tabContainer.style.display = 'flex';
-tabContainer.style.gap = '8px';
-tabContainer.style.marginBottom = '10px';
-
-// 과거 버튼
-const pastButton = document.createElement('button');
-pastButton.textContent = '과거';
-pastButton.className = 'timeBtn selected'; // 선택 상태
-pastButton.type = 'button';
-
-tabContainer.appendChild(pastButton);
-formContainer.appendChild(tabContainer);
-
-// 미래 버튼
-const futureButton = document.createElement('button');
-futureButton.textContent = '미래';
-futureButton.className = 'timeBtn'
-futureButton.type = 'button';
-tabContainer.appendChild(futureButton);
-
-// 옵션 선택 
-const periodSelect = document.createElement('select');
-periodSelect.id = 'investment-period-select';
-periodSelect.className = 'form-control';
-formContainer.appendChild(tabContainer);
-periodGroup.appendChild(periodSelect);
-
-// 드롭다운 옵션 데이터
-const options = {
-  past: [
-    { label: '1년 전', value: -365 },
-    { label: '2년 전', value: -730 },
-    { label: '3년 전', value: -1095 }
-  ],
-  future: [
-    { label: '7일 후', value: 7 },
-    { label: '15일 후', value: 15 },
-    { label: '30일 후', value: 30 }
-  ]
-};
-
-// 옵션 로딩 함수
-function loadPeriodOptions(type) {
-  periodSelect.innerHTML = ''; // 기존 옵션 제거
-  options[type].forEach(opt => {
-    const option = document.createElement('option');
-    option.value = opt.value;
-    option.textContent = opt.label;
-    periodSelect.appendChild(option);
+  const amountGroup = document.createElement("div");
+  amountGroup.className = "form-group";
+  const amountLabel = document.createElement("label");
+  amountLabel.htmlFor = "investment-amount";
+  amountLabel.textContent = "투자 금액 ($):";
+  pageElements.amountInput = document.createElement("input");
+  pageElements.amountInput.type = "number";
+  pageElements.amountInput.id = "investment-amount";
+  pageElements.amountInput.placeholder = "예: 1000";
+  pageElements.amountInput.min = "1";
+  pageElements.amountInput.addEventListener("input", (e) => {
+    // 'change' 대신 'input'으로 더 즉각적인 반응
+    appState.investmentAmount = parseFloat(e.target.value) || 0;
   });
-  appState.investmentPeriod = parseInt(periodSelect.value, 10);
-}
+  amountGroup.appendChild(amountLabel);
+  amountGroup.appendChild(pageElements.amountInput);
+  formGrid.appendChild(amountGroup);
 
-// 이벤트 연결
-periodSelect.addEventListener('change', (e) => {
-  appState.investmentPeriod = parseInt(e.target.value, 10);
-});
+  // 투자 기간
+  const periodGroup = document.createElement("div");
+  periodGroup.className = "form-group";
+  const periodLabel = document.createElement("label");
+  periodLabel.htmlFor = "investment-period";
+  periodLabel.textContent = "투자 기간 (일):";
+  pageElements.periodInput = document.createElement("input");
+  pageElements.periodInput.type = "number";
+  pageElements.periodInput.id = "investment-period";
+  pageElements.periodInput.placeholder = "예: 30";
+  pageElements.periodInput.min = "1";
+  pageElements.periodInput.addEventListener("input", (e) => {
+    // 'change' 대신 'input'
+    appState.investmentPeriod = parseInt(e.target.value, 10) || 0;
+  });
+  periodGroup.appendChild(periodLabel);
+  periodGroup.appendChild(pageElements.periodInput);
+  formGrid.appendChild(periodGroup);
 
-pastButton.addEventListener('click', () => {
-  pastButton.classList.add('selected');
-  futureButton.classList.remove('selected');
-  loadPeriodOptions('past');
-});
-
-futureButton.addEventListener('click', () => {
-  futureButton.classList.add('selected');
-  pastButton.classList.remove('selected');
-  loadPeriodOptions('future');
-});
-
-// 기본값: 과거
-loadPeriodOptions('past');
-
-// 추가 구성요소 연결
-formGrid.appendChild(periodGroup);
-formContainer.appendChild(formGrid);
-
-
+  formContainer.appendChild(formGrid);
 
   // 예측 버튼
-  pageElements.simulateButton = document.createElement('button');
-  pageElements.simulateButton.className = 'simulation-button';
-  pageElements.simulateButton.addEventListener('click', handleSimulation);
+  pageElements.simulateButton = document.createElement("button");
+  pageElements.simulateButton.className = "simulation-button";
+  pageElements.simulateButton.addEventListener("click", handleSimulation);
   formContainer.appendChild(pageElements.simulateButton);
 
   return formContainer;
@@ -297,18 +180,21 @@ formContainer.appendChild(formGrid);
 // 코인 선택 옵션 채우기
 function populateCoinSelect() {
   if (!pageElements.coinSelect) return;
-  pageElements.coinSelect.innerHTML = ''; // 기존 옵션 제거
-  appState.coins.forEach(coin => {
-    const option = document.createElement('option');
+  pageElements.coinSelect.innerHTML = ""; // 기존 옵션 제거
+  appState.coins.forEach((coin) => {
+    const option = document.createElement("option");
     option.value = coin.id; // API 응답의 id 사용
-    option.textContent = `${coin.name} (${coin.pair})`;
+    option.textContent = `${coin.name} (${coin.symbol})`;
     if (coin.id === appState.selectedCoinId) {
       option.selected = true;
     }
     pageElements.coinSelect.appendChild(option);
   });
   // selectedCoinId가 유효하지 않거나 설정되지 않은 경우, 목록의 첫 번째 코인을 기본값으로 설정
-  if (!appState.coins.find(c => c.id === appState.selectedCoinId) && appState.coins.length > 0) {
+  if (
+    !appState.coins.find((c) => c.id === appState.selectedCoinId) &&
+    appState.coins.length > 0
+  ) {
     appState.selectedCoinId = appState.coins[0].id;
     pageElements.coinSelect.value = appState.selectedCoinId;
   }
@@ -340,13 +226,13 @@ function updateFormInputsState() {
 function updateErrorMessage() {
   if (!pageElements.errorMessage) return;
   pageElements.errorMessage.textContent = appState.error;
-  pageElements.errorMessage.style.display = appState.error ? 'block' : 'none';
+  pageElements.errorMessage.style.display = appState.error ? "block" : "none";
 }
 
 // 결과 영역 업데이트
 function updateResultsArea() {
   if (!pageElements.resultsArea) return;
-  pageElements.resultsArea.innerHTML = ''; // 이전 내용 지우기
+  pageElements.resultsArea.innerHTML = ""; // 이전 내용 지우기
 
   if (appState.isLoading) {
     pageElements.resultsArea.innerHTML = `
@@ -355,9 +241,19 @@ function updateResultsArea() {
         <p>데이터를 분석하고 예측하는 중입니다...</p>
       </div>`;
   } else if (appState.simulationResult) {
-    const { coinName, coinSymbol, initialInvestment, finalValue, profitOrLoss, returnRate, periodDays, futurePrice, initialPrice } = appState.simulationResult;
-    const resultContainer = document.createElement('div');
-    resultContainer.className = 'prediction-container';
+    const {
+      coinName,
+      coinSymbol,
+      initialInvestment,
+      finalValue,
+      profitOrLoss,
+      returnRate,
+      periodDays,
+      futurePrice,
+      initialPrice,
+    } = appState.simulationResult;
+    const resultContainer = document.createElement("div");
+    resultContainer.className = "prediction-container";
     resultContainer.innerHTML = `
       <h3>📈 ${coinName} 투자 예측 결과</h3>
       <div class="result-summary">
@@ -373,13 +269,13 @@ function updateResultsArea() {
           </div>
           <div class="result-item">
             <span class="result-label">예상 수익/손실</span>
-            <span class="result-value ${profitOrLoss >= 0 ? 'profit' : 'loss'}">
+            <span class="result-value ${profitOrLoss >= 0 ? "profit" : "loss"}">
               $${profitOrLoss.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
           <div class="result-item">
             <span class="result-label">예상 수익률</span>
-            <span class="result-value ${returnRate >= 0 ? 'profit' : 'loss'}">
+            <span class="result-value ${returnRate >= 0 ? "profit" : "loss"}">
               ${returnRate.toFixed(2)}%
             </span>
           </div>
@@ -397,7 +293,8 @@ function updateResultsArea() {
         <p>이 예측은 과거 데이터와 단순 변동성 모델을 기반으로 한 추정치이며, 실제 투자 수익을 보장하지 않습니다. 모든 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.</p>
       </div>`;
     pageElements.resultsArea.appendChild(resultContainer);
-  } else { // 로딩 중도 아니고, 결과도 없는 초기 상태
+  } else {
+    // 로딩 중도 아니고, 결과도 없는 초기 상태
     pageElements.resultsArea.innerHTML = `
       <div class="initial-info-container">
         <div class="initial-info-icon">
@@ -416,24 +313,28 @@ function updateResultsArea() {
 
 // --- 이벤트 핸들러 및 로직 ---
 async function handleSimulation() {
-  if (!appState.selectedCoinId || !appState.investmentAmount || !appState.investmentPeriod) {
-    appState.error = '모든 필드를 입력해주세요.';
+  if (
+    !appState.selectedCoinId ||
+    !appState.investmentAmount ||
+    !appState.investmentPeriod
+  ) {
+    appState.error = "모든 필드를 입력해주세요.";
     updateErrorMessage();
     return;
   }
   if (appState.investmentAmount <= 0) {
-    appState.error = '투자 금액은 0보다 커야 합니다.';
+    appState.error = "투자 금액은 0보다 커야 합니다.";
     updateErrorMessage();
     return;
   }
   if (appState.investmentPeriod <= 0) {
-    appState.error = '투자 기간은 0보다 커야 합니다.';
+    appState.error = "투자 기간은 0보다 커야 합니다.";
     updateErrorMessage();
     return;
   }
 
   appState.isLoading = true;
-  appState.error = '';
+  appState.error = "";
   appState.simulationResult = null;
 
   updateFormInputsState();
@@ -441,18 +342,25 @@ async function handleSimulation() {
   updateResultsArea(); // 로딩 상태 표시
 
   try {
-    const historicalData = await fetchHistoricalData(appState.selectedCoinId, appState.investmentPeriod);
+    const historicalData = await fetchHistoricalData(
+      appState.selectedCoinId,
+      appState.investmentPeriod,
+    );
     if (historicalData.length < 2) {
-      throw new Error('수익률 계산에 충분한 데이터가 없습니다.');
+      throw new Error("수익률 계산에 충분한 데이터가 없습니다.");
     }
 
     const initialPrice = historicalData[0];
     const finalPrice = historicalData[historicalData.length - 1];
-    const coin = appState.coins.find(c => c.id === appState.selectedCoinId);
-    const coinSymbol = coin ? coin.symbol : appState.selectedCoinId.toUpperCase();
+    const coin = appState.coins.find((c) => c.id === appState.selectedCoinId);
+    const coinSymbol = coin
+      ? coin.symbol
+      : appState.selectedCoinId.toUpperCase();
     const coinName = coin ? coin.name : appState.selectedCoinId;
 
-    const profitOrLoss = (appState.investmentAmount / initialPrice * finalPrice) - appState.investmentAmount;
+    const profitOrLoss =
+      (appState.investmentAmount / initialPrice) * finalPrice -
+      appState.investmentAmount;
     const returnRate = (profitOrLoss / appState.investmentAmount) * 100;
     const futurePrice = finalPrice * (1 + (Math.random() - 0.45) * 0.2); // 임의 변동성
 
@@ -468,7 +376,7 @@ async function handleSimulation() {
       initialPrice,
     };
   } catch (err) {
-    appState.error = '시뮬레이션 중 오류가 발생했습니다: ' + err.message;
+    appState.error = "시뮬레이션 중 오류가 발생했습니다: " + err.message;
     console.error(err);
   } finally {
     appState.isLoading = false;
@@ -483,16 +391,16 @@ async function initializePage(urlCoinSymbolParam) {
   // 상태 초기화
   appState = {
     coins: [],
-    selectedCoinId: urlCoinSymbolParam || '', // URL 파라미터로 초기 코인 설정 시도
+    selectedCoinId: urlCoinSymbolParam || "", // URL 파라미터로 초기 코인 설정 시도
     investmentAmount: 1000,
     investmentPeriod: 30,
     simulationResult: null,
     isLoading: true, // 초기 코인 목록 로딩
-    error: '',
+    error: "",
   };
 
   updateFormInputsState(); // 입력 필드 초기 상태 (로딩 중이므로 비활성화)
-  updateResultsArea();     // 초기 로딩 메시지 또는 안내
+  updateResultsArea(); // 초기 로딩 메시지 또는 안내
 
   try {
     const coinListFromAPI = await fetchCoinList();
@@ -500,26 +408,29 @@ async function initializePage(urlCoinSymbolParam) {
 
     // URL 파라미터로 전달된 코인이 유효한지 확인하고 selectedCoinId 설정
     if (urlCoinSymbolParam) {
-        const foundCoin = appState.coins.find(c => c.symbol === urlCoinSymbolParam || c.id === urlCoinSymbolParam);
-        if (foundCoin) {
-            appState.selectedCoinId = foundCoin.id;
-        } else if (appState.coins.length > 0) { // URL 코인이 없으면 첫번째 코인
-            appState.selectedCoinId = appState.coins[0].id;
-        }
-    } else if (appState.coins.length > 0) { // URL 파라미터 없고 코인 목록 있으면 첫번째 코인
+      const foundCoin = appState.coins.find(
+        (c) => c.symbol === urlCoinSymbolParam || c.id === urlCoinSymbolParam,
+      );
+      if (foundCoin) {
+        appState.selectedCoinId = foundCoin.id;
+      } else if (appState.coins.length > 0) {
+        // URL 코인이 없으면 첫번째 코인
         appState.selectedCoinId = appState.coins[0].id;
+      }
+    } else if (appState.coins.length > 0) {
+      // URL 파라미터 없고 코인 목록 있으면 첫번째 코인
+      appState.selectedCoinId = appState.coins[0].id;
     }
-    
+
     populateCoinSelect(); // 코인 목록으로 <select> 채우기
-    
   } catch (err) {
-    appState.error = '코인 목록을 불러오는 데 실패했습니다.';
+    appState.error = "코인 목록을 불러오는 데 실패했습니다.";
     console.error(err);
     updateErrorMessage();
   } finally {
     appState.isLoading = false;
     updateFormInputsState(); // 입력 필드 활성화 및 값 설정
-    updateResultsArea();     // 초기 안내 메시지 표시 (로딩 완료)
+    updateResultsArea(); // 초기 안내 메시지 표시 (로딩 완료)
   }
 }
 

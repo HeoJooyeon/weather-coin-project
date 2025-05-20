@@ -1,4 +1,5 @@
 // pages/Login.js
+// 전역으로 window.updateLoginButtonText 함수를 사용하므로 별도의 import는 필요 없습니다.
 
 export function renderLoginPage(container) {
   container.innerHTML = ""; // 이전 내용 지우기
@@ -42,42 +43,21 @@ export function renderLoginPage(container) {
   const passwordLabel = document.createElement("label");
   passwordLabel.htmlFor = "password";
   passwordLabel.textContent = "비밀번호";
-  passwordGroup.appendChild(passwordLabel);
-
-  // 비밀번호와 토글 버튼 래퍼
-  const passwordWrapper = document.createElement("div");
-  passwordWrapper.className = "password-wrapper";
-
   const passwordInput = document.createElement("input");
   passwordInput.type = "password";
   passwordInput.id = "password";
   passwordInput.name = "password";
   passwordInput.placeholder = "••••••••";
   passwordInput.required = true;
-  // Caps Lock 감지 이벤트 리스너
   passwordInput.addEventListener("keyup", handleCapsLock);
-
-  const togglePasswordBtn = document.createElement("button");
-  togglePasswordBtn.type = "button";
-  togglePasswordBtn.className = "toggle-password-btn";
-  togglePasswordBtn.innerHTML = '<span class="eye-icon">👀</span>';
-  togglePasswordBtn.addEventListener("click", () => {
-    const isHidden = passwordInput.type === 'password';
-    passwordInput.type = isHidden ? 'text' : 'password';
-    togglePasswordBtn.innerHTML = isHidden
-      ? '<span class="eye-slash-icon">🙈</span>'
-      : '<span class="eye-icon">🙉</span>';
-  });
-
-  passwordWrapper.appendChild(passwordInput);
-  passwordWrapper.appendChild(togglePasswordBtn);
-  passwordGroup.appendChild(passwordWrapper);
+  passwordGroup.appendChild(passwordLabel);
+  passwordGroup.appendChild(passwordInput);
 
   // Caps Lock 알림
   const capsLockWarning = document.createElement("div");
   capsLockWarning.id = "capsLockWarning";
   capsLockWarning.className = "caps-lock-warning";
-  capsLockWarning.style.display = "none"; // 기본 숨김
+  capsLockWarning.style.display = "none";
   capsLockWarning.textContent = "Caps Lock이 켜져 있습니다.";
   passwordGroup.appendChild(capsLockWarning);
 
@@ -124,14 +104,56 @@ export function renderLoginPage(container) {
   container.appendChild(loginPageWrapper);
 }
 
-function handleLoginSubmit(event) {
+async function handleLoginSubmit(event) {
   event.preventDefault();
-  const email = event.target.email.value;
+  const userId = event.target.email.value; // 서버는 userId를 사용
   const password = event.target.password.value;
   const rememberMe = event.target.remember.checked;
 
-  console.log("로그인 시도:", { email, password, rememberMe });
-  alert(`로그인 시도: ${email} (구현 예정)`);
+  try {
+    const response = await fetch("http://localhost:3001/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: userId,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      // 서버 응답에 맞게 사용자 정보 저장
+      localStorage.setItem("userId", data.user.userId);
+      localStorage.setItem("id", data.user.id);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("isLoggedIn", "true");
+
+      if (rememberMe) {
+        // 로그인 상태 유지 처리
+        localStorage.setItem("rememberLogin", "true");
+      }
+
+      // 로그인 버튼 텍스트를 즉시 업데이트 (전역 함수 호출)
+      if (typeof window.updateLoginButtonText === "function") {
+        window.updateLoginButtonText();
+      }
+
+      // 페이지 이동을 먼저 수행합니다.
+      window.location.hash = "#main"; // 로그인 성공 시 메인 페이지로 이동
+
+      // 그 다음에 alert 메시지를 표시합니다.
+      alert("로그인 성공!");
+    } else {
+      // 서버 응답에 있는 실패 메시지 표시
+      alert(data.message || "로그인에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("로그인 API 호출 오류:", error);
+    alert("네트워크 오류 또는 서버에 연결할 수 없습니다.");
+  }
 }
 
 function handleCapsLock(event) {

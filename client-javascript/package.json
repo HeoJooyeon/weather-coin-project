@@ -12,10 +12,13 @@
     "prediction",
     "finance"
   ],
-  "author": "Your Name",
+  "author": "moon",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
     "parcel": "^2.14.4"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.9"
   }
 }
