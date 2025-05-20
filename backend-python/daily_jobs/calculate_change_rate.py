@@ -35,7 +35,7 @@ def fetch_coin_info():
     
 def calculate_change_rate(df_day):    
     
-    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    coins = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "ADAUSDT","TRXUSDT", "SHIBUSDT", "LTCUSDT"]
     date_change = []
     for coin in coins:
         
@@ -88,14 +88,14 @@ def input_coin_change(coin_changes):
         for df in coin_changes:
             for _, row in df.iterrows():
                 cur.execute("""
-                    INSERT INTO coin_past_info(
+                    INSERT IGNORE INTO coin_past_info(
                         pair,open_date  ,current_price  ,change_24h  ,change_3Y  ,change_2Y  ,change_1Y, market_cap_rank ,created_at,updated_at,deleted_at
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s,
                         %s,1, NOW(), NOW(), NOW()
                     )         
                 """, (
-                    row["pair"] + "USDT", row.get("open_time", 0), row.get("close_price", 0), row.get("daily_change", 0), row.get("3_year_change", 0), row.get("2_year_change", 0), row.get("1_year_change", 0)
+                    row["pair"], row.get("open_time", 0), row.get("close_price", 0), row.get("daily_change", 0), row.get("3_year_change", 0), row.get("2_year_change", 0), row.get("1_year_change", 0)
                 ))
         connection.commit()
         print("데이터 저장 완료")

@@ -109,7 +109,7 @@ def insert_prediction_to_db(pair, current_price, returns_dict, predict_time):
     cursor = conn.cursor()
 
     sql = """
-        INSERT INTO coin_prediction (
+        INSERT IGNORE INTO coin_prediction (
             pair, current_price, predict_return_7d, predict_return_15d, predict_return_30d, predict_time
         )
         VALUES (%s, %s, %s, %s, %s, %s)

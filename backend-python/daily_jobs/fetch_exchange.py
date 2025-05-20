@@ -40,7 +40,7 @@ def fetch_exchange_1year_to_mysql():
                                 
         # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
             cur.execute(f"""
-                INSERT INTO exchange_rate(base_currency , target_currency , rate , rate_date , created_at , updated_at , deleted_at)
+                INSERT IGNORE INTO exchange_rate(base_currency , target_currency , rate , rate_date , created_at , updated_at , deleted_at)
                 VALUES(%s, "KRW", %s, NOW(), NOW(), NOW(), NOW())                
             """, (base_currency, rate))
                             

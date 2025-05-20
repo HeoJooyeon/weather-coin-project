@@ -32,7 +32,7 @@ def load_coin_data():
 # 기술 지표 예측
  
 def calcurate_indicators(df):
-    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    coins = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "ADAUSDT","TRXUSDT", "SHIBUSDT", "LTCUSDT"]
     coin_results = []
     for coin in coins:        
         coin_df = df[df["pair"] == coin].sort_values("open_time")
@@ -56,7 +56,6 @@ def calcurate_indicators(df):
             "MACDs_12_26_9": "macd_signal",
             "MACDh_12_26_9": "macd_histogram"
         })
-        
         coin_results.append(coin_df.fillna(0))
     return coin_results  
 
@@ -69,14 +68,14 @@ def input_coin_indicator(coin_indicators):
         for df in coin_indicators:
             for _, row in df.iterrows():
                 cur.execute("""
-                    INSERT INTO coin_indicator_hour(
+                    INSERT IGNORE INTO coin_indicator_hour(
                         pair,ma_5H ,ma_20H ,ema_5H ,ema_20H ,rsi_hour ,macd_hour ,macd_signal_hour ,macd_histogram_hour ,created_at,updated_at,deleted_at
                     ) VALUES(
                         %s, %s, %s, %s, %s, %s,
                         %s, %s, %s, NOW(), NOW(), NOW()
                     )
                 """, (
-                    row["pair"] + "USDT", row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0)
+                    row["pair"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0)
                 ))
                 
             connection.commit()

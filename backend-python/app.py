@@ -37,7 +37,7 @@ def run_python_file(filepath, job_type='general'):
         f.write(f"Time: {timestamp}\n\n")
         f.write(output)
 
-    print(f"[{status.upper()}] Ran: {filepath}")
+    print(f"[{status.upper()}] {filepath}")
     return {'status': status, 'output': output}
 
 # 서버 시작 시 일괄 실행

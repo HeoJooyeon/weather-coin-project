@@ -26,7 +26,7 @@ def fetch_coin_to_mysql(query = "BTC"):
             try:                                    
                 # TABLE에 정보 삽입 // open_time이 중복될 시 이전의 값에서 현재의 값으로 update
                 cur.execute(f"""
-                    INSERT INTO coin_master(name , symbol , pair , logo_url ,created_at, updated_at, deleted_at)
+                    INSERT IGNORE INTO coin_master(name , symbol , pair , logo_url ,created_at, updated_at, deleted_at)
                     VALUES(%s, %s, %s, %s, NOW(), NOW(), NOW())                        
                 """, (coin, coin, f"{coin}USDT", imgUrl))
                     

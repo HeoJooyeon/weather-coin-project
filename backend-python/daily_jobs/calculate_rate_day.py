@@ -32,7 +32,7 @@ def load_coin_data():
 # 기술 지표 예측
  
 def calcurate_indicators(df):
-    coins = ["BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA","TRX", "SHIB", "LTC"]
+    coins = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "ADAUSDT","TRXUSDT", "SHIBUSDT", "LTCUSDT"]
     coin_results = []
     for coin in coins:        
         coin_df = df[df["pair"] == coin].sort_values("open_time")
@@ -137,14 +137,14 @@ def input_coin_indicator(coin_scores):
         for df in coin_scores:
             for _, row in df.iterrows():
                 cur.execute("""
-                    INSERT INTO coin_indicator_day(
+                    INSERT IGNORE INTO coin_indicator_day(
                         pair,open_time,ma_5D ,ma_20D ,ema_5D ,ema_20D ,rsi_day ,macd_day ,macd_signal_day ,macd_histogram_day ,score,w_icon,created_at,updated_at,deleted_at
                     ) VALUES(
                         %s, %s, %s, %s, %s, %s, %s,
                         %s, %s, %s,%s,%s, NOW(), NOW(), NOW()
                     )
                 """, (
-                    row["pair"] + "USDT", row["open_time"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0),row.get("score"),row.get("score_text")
+                    row["pair"], row["open_time"], row.get("sma_5", 0),row.get("sma_20", 0),row.get("ema_5", 0),row.get("ema_20", 0),row.get("rsi", 0),row.get("macd_line", 0),row.get("macd_signal", 0),row.get("macd_histogram", 0),row.get("score"),row.get("score_text")
                 ))
                 
             connection.commit()
